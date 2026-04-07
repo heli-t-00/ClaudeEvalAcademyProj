@@ -1,11 +1,9 @@
 package stepdefs
 
 import context.TestContext
-import io.cucumber.java.en.{Then, When}
-import org.junit.Assert.*
-import org.openqa.selenium.{By, WebDriver}
+import io.cucumber.java.en.When
+import org.openqa.selenium.{By, JavascriptExecutor}
 import org.openqa.selenium.support.ui.{ExpectedConditions, WebDriverWait}
-import pages.LoginPage
 
 class LogoutSteps(context: TestContext):
 
@@ -20,12 +18,8 @@ class LogoutSteps(context: TestContext):
 
   @When("the user clicks Logout")
   def clickLogout(): Unit =
-    context.driver.findElement(logoutLink).click()
-
-  @Then("the user is on the login page")
-  def userIsOnLoginPage(): Unit =
-    val url = context.driver.getCurrentUrl
-    assertTrue(
-      s"Expected login page but got: $url",
-      url == "https://www.saucedemo.com/" || url.endsWith("saucedemo.com")
-    )
+    val el = context.driver.findElement(logoutLink)
+    // JS click bypasses the react-burger-menu animation overlay
+    context.driver.asInstanceOf[JavascriptExecutor].executeScript("arguments[0].click()", el)
+    WebDriverWait(context.driver, java.time.Duration.ofSeconds(10))
+      .until(ExpectedConditions.visibilityOfElementLocated(By.id("login-button")))

@@ -1,6 +1,7 @@
 package pages
 
 import org.openqa.selenium.{By, WebDriver}
+import org.openqa.selenium.support.ui.{ExpectedConditions, WebDriverWait}
 import scala.jdk.CollectionConverters.*
 
 class CartPage(driver: WebDriver):
@@ -37,16 +38,16 @@ class CartPage(driver: WebDriver):
       !item.findElements(cartItemPrice).isEmpty
 
   def removeItemByName(name: String): Unit =
-    val items = driver.findElements(cartItems).asScala
-    items.find(el => el.findElement(cartItemName).getText == name) match
-      case Some(item) => item.findElement(removeButton).click()
-      case None       => throw RuntimeException(s"Cart item '$name' not found")
+    val dataTest = "remove-" + name.toLowerCase.replace(" ", "-")
+    driver.findElement(By.cssSelector(s"[data-test='$dataTest']")).click()
 
   def clickContinueShopping(): Unit =
     driver.findElement(continueShipping).click()
 
   def clickCheckout(): Unit =
     driver.findElement(checkoutButton).click()
+    WebDriverWait(driver, java.time.Duration.ofSeconds(10))
+      .until(ExpectedConditions.urlContains("checkout-step-one"))
 
   def isCartBadgeVisible: Boolean =
     !driver.findElements(cartBadge).isEmpty

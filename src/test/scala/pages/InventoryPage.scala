@@ -43,19 +43,19 @@ class InventoryPage(driver: WebDriver):
     driver.findElements(itemName).asScala.head.click()
 
   def addToCartByName(name: String): Unit =
-    val items = driver.findElements(inventoryItems).asScala
-    items.find(el => el.findElement(itemName).getText == name) match
-      case Some(item) => item.findElement(By.tagName("button")).click()
-      case None       => throw RuntimeException(s"Product '$name' not found")
+    val dataTest = "add-to-cart-" + name.toLowerCase.replace(" ", "-")
+    driver.findElement(By.cssSelector(s"[data-test='$dataTest']")).click()
 
   def removeFromInventoryByName(name: String): Unit =
-    addToCartByName(name) // button toggles between Add/Remove
+    val dataTest = "remove-" + name.toLowerCase.replace(" ", "-")
+    driver.findElement(By.cssSelector(s"[data-test='$dataTest']")).click()
 
   def addAllToCart(): Unit =
-    driver.findElements(By.cssSelector(".btn_inventory"))
-      .asScala
-      .filter(_.getText.equalsIgnoreCase("Add to cart"))
-      .foreach(_.click())
+    // Re-fetch buttons after each click to avoid stale element references on DOM re-render
+    var remaining = driver.findElements(By.cssSelector(".btn_primary.btn_inventory")).asScala.toList
+    while remaining.nonEmpty do
+      remaining.head.click()
+      remaining = driver.findElements(By.cssSelector(".btn_primary.btn_inventory")).asScala.toList
 
   def getButtonTextForProduct(name: String): String =
     val items = driver.findElements(inventoryItems).asScala

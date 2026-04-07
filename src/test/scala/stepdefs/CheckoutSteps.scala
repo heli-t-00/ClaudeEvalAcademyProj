@@ -21,9 +21,7 @@ class CheckoutSteps(context: TestContext):
 
   @When("the user enters checkout info: first name {string}, last name {string}, zip {string}")
   def enterCheckoutInfo(firstName: String, lastName: String, zip: String): Unit =
-    checkoutPage.enterFirstName(firstName)
-    checkoutPage.enterLastName(lastName)
-    checkoutPage.enterZip(zip)
+    checkoutPage.fillForm(firstName, lastName, zip)
 
   @When("the user clicks Continue")
   def clickContinue(): Unit =
@@ -82,6 +80,9 @@ class CheckoutSteps(context: TestContext):
 
   @Then("the order confirmation page is displayed")
   def confirmationPageDisplayed(): Unit =
+    import org.openqa.selenium.support.ui.{ExpectedConditions, WebDriverWait}
+    WebDriverWait(context.driver, java.time.Duration.ofSeconds(10))
+      .until(ExpectedConditions.urlContains("checkout-complete"))
     assertTrue(
       s"Expected confirmation page but got: ${context.driver.getCurrentUrl}",
       checkoutPage.isOnConfirmation

@@ -13,6 +13,8 @@ class LoginPage(driver: WebDriver):
 
   def open(): Unit =
     driver.get(url)
+    org.openqa.selenium.support.ui.WebDriverWait(driver, java.time.Duration.ofSeconds(10))
+      .until(org.openqa.selenium.support.ui.ExpectedConditions.elementToBeClickable(loginButton))
 
   def enterUsername(username: String): Unit =
     driver.findElement(usernameField).clear()

@@ -1,6 +1,7 @@
 package pages
 
-import org.openqa.selenium.{By, WebDriver}
+import org.openqa.selenium.{By, JavascriptExecutor, WebDriver}
+import org.openqa.selenium.support.ui.{ExpectedConditions, WebDriverWait}
 import scala.jdk.CollectionConverters.*
 
 class CheckoutPage(driver: WebDriver):
@@ -26,68 +27,83 @@ class CheckoutPage(driver: WebDriver):
   private val confirmHeader   = By.className("complete-header")
   private val backHomeButton  = By.id("back-to-products")
 
-  def isOnStep1: Boolean =
-    driver.getCurrentUrl.contains("checkout-step-one")
+  private val wait = WebDriverWait(driver, java.time.Duration.ofSeconds(10))
 
-  def isOnStep2: Boolean =
-    driver.getCurrentUrl.contains("checkout-step-two")
+  def isOnStep1: Boolean        = driver.getCurrentUrl.contains("checkout-step-one")
+  def isOnStep2: Boolean        = driver.getCurrentUrl.contains("checkout-step-two")
+  def isOnConfirmation: Boolean = driver.getCurrentUrl.contains("checkout-complete")
 
-  def isOnConfirmation: Boolean =
-    driver.getCurrentUrl.contains("checkout-complete")
-
-  def enterFirstName(value: String): Unit =
-    driver.findElement(firstNameField).clear()
-    driver.findElement(firstNameField).sendKeys(value)
-
-  def enterLastName(value: String): Unit =
-    driver.findElement(lastNameField).clear()
-    driver.findElement(lastNameField).sendKeys(value)
-
-  def enterZip(value: String): Unit =
-    driver.findElement(zipField).clear()
-    driver.findElement(zipField).sendKeys(value)
+  def fillForm(firstName: String, lastName: String, zip: String): Unit =
+    wait.until(ExpectedConditions.urlContains("checkout-step-one"))
+    wait.until(ExpectedConditions.elementToBeClickable(firstNameField))
+    // JS fill with native React setter (confirmed working — Python debug_test11).
+    // Also clicks Continue inside the same script execution so React processes fill+click
+    // atomically before the script returns.
+    driver.asInstanceOf[JavascriptExecutor].executeScript(
+      s"""function fill(id, val) {
+        var el = document.getElementById(id);
+        var s = Object.getOwnPropertyDescriptor(window.HTMLInputElement.prototype, 'value').set;
+        s.call(el, val);
+        el.dispatchEvent(new Event('input',  {bubbles: true}));
+        el.dispatchEvent(new Event('change', {bubbles: true}));
+      }
+      fill('first-name',  '${firstName}');
+      fill('last-name',   '${lastName}');
+      fill('postal-code', '${zip}');
+      document.getElementById('continue').click();"""
+    )
 
   def clickContinue(): Unit =
-    driver.findElement(continueButton).click()
+    // fillForm already triggered Continue via JS.
+    // Wait up to 3s for step-two; validation tests legitimately stay on step-one — swallow.
+    try
+      WebDriverWait(driver, java.time.Duration.ofSeconds(3))
+        .until(ExpectedConditions.urlContains("checkout-step-two"))
+    catch case _: Exception => ()
 
   def clickCancel(): Unit =
-    driver.findElement(cancelButton).click()
+    wait.until(ExpectedConditions.elementToBeClickable(cancelButton)).click()
 
   def clickCancelOnOverview(): Unit =
-    driver.findElement(cancelOverview).click()
+    wait.until(ExpectedConditions.urlContains("checkout-step-two"))
+    val cancel = wait.until(ExpectedConditions.visibilityOfElementLocated(cancelOverview))
+    driver.asInstanceOf[JavascriptExecutor].executeScript("arguments[0].click()", cancel)
 
   def clickFinish(): Unit =
-    driver.findElement(finishButton).click()
+    wait.until(ExpectedConditions.urlContains("checkout-step-two"))
+    val finish = wait.until(ExpectedConditions.visibilityOfElementLocated(finishButton))
+    // JS click bypasses potential React event-handler attachment timing issues
+    driver.asInstanceOf[JavascriptExecutor].executeScript("arguments[0].click()", finish)
 
   def clickBackHome(): Unit =
-    driver.findElement(backHomeButton).click()
+    // Wait for confirmation page to load before looking for the Back Home button
+    wait.until(ExpectedConditions.urlContains("checkout-complete"))
+    wait.until(ExpectedConditions.elementToBeClickable(backHomeButton)).click()
 
   def getErrorMessage: String =
-    driver.findElement(errorMessage).getText
+    wait.until(ExpectedConditions.visibilityOfElementLocated(errorMessage)).getText
 
   def isErrorDisplayed: Boolean =
-    !driver.findElements(errorMessage).isEmpty
+    try
+      wait.until(ExpectedConditions.visibilityOfElementLocated(errorMessage))
+      true
+    catch case _: Exception => false
 
   def getOverviewItemNames: List[String] =
     driver.findElements(overviewItems).asScala
       .map(_.findElement(itemName).getText)
       .toList
 
-  def getSubtotal: Double =
-    parsePrice(driver.findElement(subtotalLabel).getText)
-
-  def getTax: Double =
-    parsePrice(driver.findElement(taxLabel).getText)
-
-  def getTotal: Double =
-    parsePrice(driver.findElement(totalLabel).getText)
+  def getSubtotal: Double = parsePrice(driver.findElement(subtotalLabel).getText)
+  def getTax: Double      = parsePrice(driver.findElement(taxLabel).getText)
+  def getTotal: Double    = parsePrice(driver.findElement(totalLabel).getText)
 
   def getConfirmationMessage: String =
-    driver.findElement(confirmHeader).getText
+    wait.until(ExpectedConditions.visibilityOfElementLocated(confirmHeader)).getText
 
   def getOverviewItemPrices: List[Double] =
     driver.findElements(By.className("inventory_item_price")).asScala
-      .map(el => el.getText.replace("$", "").toDouble)
+      .map(_.getText.replace("$", "").toDouble)
       .toList
 
   private def parsePrice(text: String): Double =

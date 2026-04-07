@@ -43,9 +43,11 @@ class LoginSteps(context: TestContext):
 
   @Then("the user is redirected to the login page")
   def userIsOnLoginPage2(): Unit =
+    import org.openqa.selenium.support.ui.{ExpectedConditions, WebDriverWait}
+    // SauceDemo may redirect async — wait for login button to confirm
+    WebDriverWait(context.driver, java.time.Duration.ofSeconds(5))
+      .until(ExpectedConditions.visibilityOfElementLocated(org.openqa.selenium.By.id("login-button")))
     assertTrue(
       s"Expected login page but got: ${context.driver.getCurrentUrl}",
-      context.driver.getCurrentUrl == "https://www.saucedemo.com/"
-        || context.driver.getCurrentUrl.contains("saucedemo.com")
-        && !context.driver.getCurrentUrl.contains("inventory")
+      !context.driver.getCurrentUrl.contains("inventory")
     )

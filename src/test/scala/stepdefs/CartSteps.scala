@@ -81,8 +81,8 @@ class CartSteps(context: TestContext):
   def cartItemsHaveRequiredFields(): Unit =
     assertTrue("Cart items missing required fields", cartPage.itemsHaveRequiredFields)
 
-  @Then("the user is on the inventory page")
-  def userIsOnInventoryPage(): Unit =
+  @Then("the user is back on the inventory page")
+  def userIsBackOnInventoryPage(): Unit =
     assertTrue(
       s"Expected inventory page but got: ${context.driver.getCurrentUrl}",
       context.driver.getCurrentUrl.contains("inventory.html")

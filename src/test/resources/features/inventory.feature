@@ -41,9 +41,9 @@ Feature: Inventory / Product Listings
     When the user sorts products by "Price (high to low)"
     Then the products are sorted by price descending
 
-  # TC-022 — Sort persists after navigation
-  Scenario: Sort order persists after returning from product detail
+  # TC-022 — Sort resets after navigation (known SauceDemo behaviour: sort is NOT persisted on back)
+  Scenario: Sort order resets to default after returning from product detail
     When the user sorts products by "Name (Z to A)"
     And the user clicks on the first product name
     And the user clicks the back button
-    Then the products are sorted alphabetically descending
+    Then the products are sorted alphabetically ascending

@@ -1,9 +1,10 @@
 package hooks
 
 import context.TestContext
-import io.cucumber.java.{After, Before}
+import io.cucumber.java.{After, Before, Scenario}
 import io.github.bonigarcia.wdm.WebDriverManager
 import org.openqa.selenium.chrome.{ChromeDriver, ChromeOptions}
+import org.openqa.selenium.{OutputType, TakesScreenshot}
 
 class Hooks(context: TestContext):
 
@@ -19,6 +20,13 @@ class Hooks(context: TestContext):
     )
 
   @After
-  def tearDown(): Unit =
+  def tearDown(scenario: Scenario): Unit =
     if context.driver != null then
-      context.driver.quit()
+      try
+        val screenshot = context.driver.asInstanceOf[TakesScreenshot]
+          .getScreenshotAs(OutputType.BYTES)
+        val label = if scenario.isFailed then "FAILED" else "PASSED"
+        scenario.attach(screenshot, "image/png", s"$label — ${scenario.getName}")
+      catch case _: Exception => () // never block teardown due to screenshot error
+      finally
+        context.driver.quit()

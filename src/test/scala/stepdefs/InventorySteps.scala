@@ -3,6 +3,8 @@ package stepdefs
 import context.TestContext
 import io.cucumber.java.en.{Given, Then, When}
 import org.junit.Assert.*
+import org.openqa.selenium.JavascriptExecutor
+import org.openqa.selenium.support.ui.{ExpectedConditions, WebDriverWait}
 import pages.{InventoryPage, LoginPage}
 
 class InventorySteps(context: TestContext):
@@ -12,8 +14,29 @@ class InventorySteps(context: TestContext):
 
   @Given("the user is logged in as {string}")
   def userIsLoggedInAs(username: String): Unit =
-    loginPage.open()
-    loginPage.login(username, "secret_sauce")
+    val currentUrl = context.driver.getCurrentUrl
+    // After logout the page is already the login page but React state may be stale.
+    // Use JS fill + click (same technique that works for checkout) instead of sendKeys.
+    if currentUrl.contains("saucedemo.com") && !currentUrl.contains("inventory") then
+      WebDriverWait(context.driver, java.time.Duration.ofSeconds(10))
+        .until(ExpectedConditions.elementToBeClickable(org.openqa.selenium.By.id("login-button")))
+      context.driver.asInstanceOf[JavascriptExecutor].executeScript(
+        s"""function fill(id, val) {
+          var el = document.getElementById(id);
+          var s = Object.getOwnPropertyDescriptor(window.HTMLInputElement.prototype, 'value').set;
+          s.call(el, val);
+          el.dispatchEvent(new Event('input',  {bubbles: true}));
+          el.dispatchEvent(new Event('change', {bubbles: true}));
+        }
+        fill('user-name', '$username');
+        fill('password',  'secret_sauce');
+        document.getElementById('login-button').click();"""
+      )
+    else
+      loginPage.open()
+      loginPage.login(username, "secret_sauce")
+    WebDriverWait(context.driver, java.time.Duration.ofSeconds(10))
+      .until(ExpectedConditions.urlContains("inventory.html"))
 
   @Given("the user is on the inventory page")
   def userIsOnInventoryPage(): Unit =

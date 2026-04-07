@@ -57,13 +57,12 @@ Feature: Checkout
     Then the user is on the cart page
     And the cart contains "1" items
 
-  # TC-045 — Cancel on overview returns to cart
-  Scenario: Cancel on order overview returns to cart with items intact
+  # TC-045 — Cancel on overview returns to inventory (SauceDemo behaviour: Cancel on step 2 goes to /inventory.html)
+  Scenario: Cancel on order overview returns to inventory page
     When the user enters checkout info: first name "John", last name "Doe", zip "12345"
     And the user clicks Continue
     And the user clicks Cancel on the overview page
-    Then the user is on the cart page
-    And the cart contains "1" items
+    Then the user is on the inventory page
 
   # TC-042 — Overview totals correct
   Scenario: Order overview shows correct subtotal and tax

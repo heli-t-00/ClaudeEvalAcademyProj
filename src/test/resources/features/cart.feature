@@ -56,7 +56,7 @@ Feature: Shopping Cart
   Scenario: Continue Shopping button returns to inventory
     When the user navigates to the cart
     And the user clicks "Continue Shopping"
-    Then the user is on the inventory page
+    Then the user is back on the inventory page
 
   # TC-028 — Remove from inventory
   Scenario: Remove item via Remove button on the inventory page
