@@ -1,6 +1,7 @@
 package pages
 
 import org.openqa.selenium.{By, WebDriver, WebElement}
+import org.openqa.selenium.support.ui.{ExpectedConditions, WebDriverWait}
 import scala.jdk.CollectionConverters.*
 
 class InventoryPage(driver: WebDriver):
@@ -43,8 +44,12 @@ class InventoryPage(driver: WebDriver):
     driver.findElements(itemName).asScala.head.click()
 
   def addToCartByName(name: String): Unit =
-    val dataTest = "add-to-cart-" + name.toLowerCase.replace(" ", "-")
-    driver.findElement(By.cssSelector(s"[data-test='$dataTest']")).click()
+    val addTest    = "add-to-cart-" + name.toLowerCase.replace(" ", "-")
+    val removeTest = "remove-"      + name.toLowerCase.replace(" ", "-")
+    driver.findElement(By.cssSelector(s"[data-test='$addTest']")).click()
+    // Wait for React to flip the button to Remove — confirms cart state updated before next step
+    WebDriverWait(driver, java.time.Duration.ofSeconds(5))
+      .until(ExpectedConditions.presenceOfElementLocated(By.cssSelector(s"[data-test='$removeTest']")))
 
   def removeFromInventoryByName(name: String): Unit =
     val dataTest = "remove-" + name.toLowerCase.replace(" ", "-")

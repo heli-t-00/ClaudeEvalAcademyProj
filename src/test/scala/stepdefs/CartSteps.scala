@@ -28,7 +28,14 @@ class CartSteps(context: TestContext):
 
   @When("the user adds the item to the cart from the detail page")
   def addFromDetailPage(): Unit =
-    context.driver.findElement(org.openqa.selenium.By.cssSelector(".btn_primary")).click()
+    import org.openqa.selenium.support.ui.{ExpectedConditions, WebDriverWait}
+    val btn = WebDriverWait(context.driver, java.time.Duration.ofSeconds(10))
+      .until(ExpectedConditions.elementToBeClickable(org.openqa.selenium.By.cssSelector(".btn_primary")))
+    btn.click()
+    // Wait for badge to appear confirming React state updated
+    WebDriverWait(context.driver, java.time.Duration.ofSeconds(5))
+      .until(ExpectedConditions.presenceOfElementLocated(
+        org.openqa.selenium.By.className("shopping_cart_badge")))
 
   @When("the user refreshes the page")
   def refreshPage(): Unit =
