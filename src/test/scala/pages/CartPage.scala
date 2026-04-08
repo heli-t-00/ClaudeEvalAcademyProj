@@ -1,6 +1,6 @@
 package pages
 
-import org.openqa.selenium.{By, WebDriver}
+import org.openqa.selenium.{By, JavascriptExecutor, WebDriver}
 import org.openqa.selenium.support.ui.{ExpectedConditions, WebDriverWait}
 import scala.jdk.CollectionConverters.*
 
@@ -39,10 +39,16 @@ class CartPage(driver: WebDriver):
 
   def removeItemByName(name: String): Unit =
     val dataTest = "remove-" + name.toLowerCase.replace(" ", "-")
-    driver.findElement(By.cssSelector(s"[data-test='$dataTest']")).click()
+    val btn = WebDriverWait(driver, java.time.Duration.ofSeconds(10))
+      .until(ExpectedConditions.elementToBeClickable(By.cssSelector(s"[data-test='$dataTest']")))
+    driver.asInstanceOf[JavascriptExecutor].executeScript("arguments[0].click()", btn)
 
   def clickContinueShopping(): Unit =
-    driver.findElement(continueShipping).click()
+    val btn = WebDriverWait(driver, java.time.Duration.ofSeconds(10))
+      .until(ExpectedConditions.elementToBeClickable(continueShipping))
+    driver.asInstanceOf[JavascriptExecutor].executeScript("arguments[0].click()", btn)
+    WebDriverWait(driver, java.time.Duration.ofSeconds(10))
+      .until(ExpectedConditions.urlContains("inventory.html"))
 
   def clickCheckout(): Unit =
     driver.findElement(checkoutButton).click()

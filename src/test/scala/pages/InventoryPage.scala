@@ -55,8 +55,14 @@ class InventoryPage(driver: WebDriver):
       .until(ExpectedConditions.presenceOfElementLocated(By.cssSelector(s"[data-test='$removeTest']")))
 
   def removeFromInventoryByName(name: String): Unit =
-    val dataTest = "remove-" + name.toLowerCase.replace(" ", "-")
-    driver.findElement(By.cssSelector(s"[data-test='$dataTest']")).click()
+    val removeTest = "remove-"        + name.toLowerCase.replace(" ", "-")
+    val addTest    = "add-to-cart-"   + name.toLowerCase.replace(" ", "-")
+    val js  = driver.asInstanceOf[org.openqa.selenium.JavascriptExecutor]
+    val btn = WebDriverWait(driver, java.time.Duration.ofSeconds(10))
+      .until(ExpectedConditions.elementToBeClickable(By.cssSelector(s"[data-test='$removeTest']")))
+    js.executeScript("arguments[0].click()", btn)
+    WebDriverWait(driver, java.time.Duration.ofSeconds(10))
+      .until(ExpectedConditions.presenceOfElementLocated(By.cssSelector(s"[data-test='$addTest']")))
 
   def addAllToCart(): Unit =
     // Click every "Add to cart" button using data-test selectors for all 6 products.
@@ -93,8 +99,10 @@ class InventoryPage(driver: WebDriver):
     !driver.findElements(cartBadge).isEmpty
 
   def navigateToCart(): Unit =
-    driver.findElement(cartLink).click()
-    // Confirm navigation completed before caller proceeds — critical in headless CI
+    val js  = driver.asInstanceOf[org.openqa.selenium.JavascriptExecutor]
+    val btn = WebDriverWait(driver, java.time.Duration.ofSeconds(10))
+      .until(ExpectedConditions.elementToBeClickable(cartLink))
+    js.executeScript("arguments[0].click()", btn)
     WebDriverWait(driver, java.time.Duration.ofSeconds(10))
       .until(ExpectedConditions.urlContains("cart.html"))
 
