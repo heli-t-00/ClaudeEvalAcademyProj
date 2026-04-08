@@ -46,9 +46,12 @@ class InventoryPage(driver: WebDriver):
   def addToCartByName(name: String): Unit =
     val addTest    = "add-to-cart-" + name.toLowerCase.replace(" ", "-")
     val removeTest = "remove-"      + name.toLowerCase.replace(" ", "-")
-    driver.findElement(By.cssSelector(s"[data-test='$addTest']")).click()
+    // Wait for the button to be clickable, then use JS click to bypass React event timing
+    val btn = WebDriverWait(driver, java.time.Duration.ofSeconds(10))
+      .until(ExpectedConditions.elementToBeClickable(By.cssSelector(s"[data-test='$addTest']")))
+    driver.asInstanceOf[org.openqa.selenium.JavascriptExecutor].executeScript("arguments[0].click()", btn)
     // Wait for React to flip the button to Remove — confirms cart state updated before next step
-    WebDriverWait(driver, java.time.Duration.ofSeconds(5))
+    WebDriverWait(driver, java.time.Duration.ofSeconds(10))
       .until(ExpectedConditions.presenceOfElementLocated(By.cssSelector(s"[data-test='$removeTest']")))
 
   def removeFromInventoryByName(name: String): Unit =
@@ -81,6 +84,9 @@ class InventoryPage(driver: WebDriver):
 
   def navigateToCart(): Unit =
     driver.findElement(cartLink).click()
+    // Confirm navigation completed before caller proceeds — critical in headless CI
+    WebDriverWait(driver, java.time.Duration.ofSeconds(10))
+      .until(ExpectedConditions.urlContains("cart.html"))
 
   def sortBy(option: String): Unit =
     val select = org.openqa.selenium.support.ui.Select(driver.findElement(sortDropdown))

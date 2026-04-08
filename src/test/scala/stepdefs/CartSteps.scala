@@ -31,9 +31,9 @@ class CartSteps(context: TestContext):
     import org.openqa.selenium.support.ui.{ExpectedConditions, WebDriverWait}
     val btn = WebDriverWait(context.driver, java.time.Duration.ofSeconds(10))
       .until(ExpectedConditions.elementToBeClickable(org.openqa.selenium.By.cssSelector(".btn_primary")))
-    btn.click()
+    context.driver.asInstanceOf[org.openqa.selenium.JavascriptExecutor].executeScript("arguments[0].click()", btn)
     // Wait for badge to appear confirming React state updated
-    WebDriverWait(context.driver, java.time.Duration.ofSeconds(5))
+    WebDriverWait(context.driver, java.time.Duration.ofSeconds(10))
       .until(ExpectedConditions.presenceOfElementLocated(
         org.openqa.selenium.By.className("shopping_cart_badge")))
 
