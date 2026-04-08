@@ -62,7 +62,8 @@ class CheckoutPage(driver: WebDriver):
     catch case _: Exception => ()
 
   def clickCancel(): Unit =
-    wait.until(ExpectedConditions.elementToBeClickable(cancelButton)).click()
+    val btn = wait.until(ExpectedConditions.elementToBeClickable(cancelButton))
+    driver.asInstanceOf[JavascriptExecutor].executeScript("arguments[0].click()", btn)
 
   def clickCancelOnOverview(): Unit =
     wait.until(ExpectedConditions.urlContains("checkout-step-two"))
@@ -76,9 +77,10 @@ class CheckoutPage(driver: WebDriver):
     driver.asInstanceOf[JavascriptExecutor].executeScript("arguments[0].click()", finish)
 
   def clickBackHome(): Unit =
-    // Wait for confirmation page to load before looking for the Back Home button
     wait.until(ExpectedConditions.urlContains("checkout-complete"))
-    wait.until(ExpectedConditions.elementToBeClickable(backHomeButton)).click()
+    val btn = wait.until(ExpectedConditions.elementToBeClickable(backHomeButton))
+    driver.asInstanceOf[JavascriptExecutor].executeScript("arguments[0].click()", btn)
+    wait.until(ExpectedConditions.urlContains("inventory.html"))
 
   def getErrorMessage: String =
     wait.until(ExpectedConditions.visibilityOfElementLocated(errorMessage)).getText
