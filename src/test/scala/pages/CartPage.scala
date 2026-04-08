@@ -51,7 +51,9 @@ class CartPage(driver: WebDriver):
       .until(ExpectedConditions.urlContains("inventory.html"))
 
   def clickCheckout(): Unit =
-    driver.findElement(checkoutButton).click()
+    val btn = WebDriverWait(driver, java.time.Duration.ofSeconds(10))
+      .until(ExpectedConditions.elementToBeClickable(checkoutButton))
+    driver.asInstanceOf[JavascriptExecutor].executeScript("arguments[0].click()", btn)
     WebDriverWait(driver, java.time.Duration.ofSeconds(10))
       .until(ExpectedConditions.urlContains("checkout-step-one"))
 
