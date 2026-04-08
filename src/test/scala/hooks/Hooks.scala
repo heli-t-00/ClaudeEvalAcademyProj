@@ -12,8 +12,12 @@ class Hooks(context: TestContext):
   def setUp(): Unit =
     WebDriverManager.chromedriver().setup()
     val options = ChromeOptions()
-    options.addArguments("--start-maximized")
-    // options.addArguments("--headless")  // uncomment for headless mode
+    // In CI (GitHub Actions sets CI=true) run headless with sandbox flags required for Linux
+    if sys.env.getOrElse("CI", "false") == "true" then
+      options.addArguments("--headless=new", "--no-sandbox", "--disable-dev-shm-usage",
+                           "--disable-gpu", "--window-size=1920,1080")
+    else
+      options.addArguments("--start-maximized")
     context.driver = ChromeDriver(options)
     context.driver.manage().timeouts().implicitlyWait(
       java.time.Duration.ofSeconds(10)
