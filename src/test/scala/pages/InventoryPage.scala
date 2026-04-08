@@ -59,11 +59,21 @@ class InventoryPage(driver: WebDriver):
     driver.findElement(By.cssSelector(s"[data-test='$dataTest']")).click()
 
   def addAllToCart(): Unit =
-    // Re-fetch buttons after each click to avoid stale element references on DOM re-render
-    var remaining = driver.findElements(By.cssSelector(".btn_primary.btn_inventory")).asScala.toList
-    while remaining.nonEmpty do
-      remaining.head.click()
-      remaining = driver.findElements(By.cssSelector(".btn_primary.btn_inventory")).asScala.toList
+    // Click every "Add to cart" button using data-test selectors for all 6 products.
+    // Avoids an infinite loop in headless CI where .btn_primary.btn_inventory can mis-match.
+    val allProducts = List(
+      "sauce-labs-backpack", "sauce-labs-bike-light", "sauce-labs-bolt-t-shirt",
+      "sauce-labs-fleece-jacket", "sauce-labs-onesie", "test.allthethings()-t-shirt-(red)"
+    )
+    val js = driver.asInstanceOf[org.openqa.selenium.JavascriptExecutor]
+    for product <- allProducts do
+      val addSel    = s"[data-test='add-to-cart-$product']"
+      val removeSel = s"[data-test='remove-$product']"
+      val btn = WebDriverWait(driver, java.time.Duration.ofSeconds(10))
+        .until(ExpectedConditions.elementToBeClickable(By.cssSelector(addSel)))
+      js.executeScript("arguments[0].click()", btn)
+      WebDriverWait(driver, java.time.Duration.ofSeconds(10))
+        .until(ExpectedConditions.presenceOfElementLocated(By.cssSelector(removeSel)))
 
   def getButtonTextForProduct(name: String): String =
     val items = driver.findElements(inventoryItems).asScala
