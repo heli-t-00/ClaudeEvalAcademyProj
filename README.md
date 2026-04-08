@@ -191,6 +191,41 @@ options.addArguments("--headless")
 
 ---
 
+## Predictive Risk & Stability Analysis
+
+A risk-based analysis was performed across all 13 test runs to identify high-risk modules and prioritise future test execution.
+
+### Module Risk Ranking
+
+| Module | Total Failures | Peak Failure Rate | Risk Level |
+|---|---|---|---|
+| **Checkout** | 34 | 54% | CRITICAL |
+| **Logout** | 3 | 23% | MEDIUM |
+| **Cart** | 3 | 15% | MEDIUM |
+| Login | 0 | 0% | STABLE |
+| Inventory | 0 | 0% | STABLE |
+
+### Prioritised Test Execution Plan
+
+| Priority | Module | Scenarios | When to Run |
+|---|---|---|---|
+| P1 | Checkout | Complete purchase, Finish button, Cancel on overview | Every build / PR merge |
+| P2 | Checkout | Validation scenarios (missing fields) | Daily regression |
+| P2 | Logout | Re-login after logout | Daily regression |
+| P3 | Cart | Add/remove multiple items | Weekly regression |
+| P4 | Checkout, Logout | Cancel on step 1, burger menu logout | Release regression only |
+| P5 | Login, Inventory | All 12 login + 8 inventory scenarios | Release regression only |
+
+### Key Technical Findings
+
+- **React controlled inputs** are the #1 systemic failure cause — standard Selenium `sendKeys` does not update React state. Requires native `HTMLInputElement` setter via JS + `dispatchEvent`
+- **Async JS navigation** — `executeScript()` returns before browser navigation completes; explicit `WebDriverWait` for target URL is required before subsequent steps
+- **React event handler timing** — `elementToBeClickable` passes before React binds `onClick`; JS click (`arguments[0].click()`) bypasses this reliably
+- **Stale element references** — cart DOM re-renders after each add/remove; `By.tagName("button")` breaks; `data-test` attribute selectors are stable
+- **Login and Inventory are fully stable** — 0 failures across all 13 runs; candidates for reduced regression frequency
+
+---
+
 ## AI Tool Used
 
-This project was built using **[Claude Code](https://claude.ai/code)** by Anthropic — a terminal-based AI coding assistant. The entire workflow from Jira analysis through to test execution, bug triage, and GitHub push was completed in a single conversation session without writing a single line of code manually.
+This project was built using **[Claude Code](https://claude.ai/code)** by Anthropic — a terminal-based AI coding assistant. The entire workflow from Jira analysis through to test execution, bug triage, risk analysis, and GitHub push was completed in a single conversation session without writing a single line of code manually.
