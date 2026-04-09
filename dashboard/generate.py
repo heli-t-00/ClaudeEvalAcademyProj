@@ -161,6 +161,44 @@ for feat in features:
           {fail_td}
         </tr>"""
 
+# ─── Build failed scenario summary rows ───────────────────────────────────────
+failed_rows = ""
+for feat in features:
+    for s in feat["scenarios"]:
+        if s["status"] == "failed":
+            flaky = " <span class='badge badge-flaky'>FLAKY</span>" if s["flaky"] else ""
+            failed_rows += f"""
+            <tr class='row-failed'>
+              <td>{feat['name']}</td>
+              <td>❌ {s['name']}{flaky}</td>
+              <td class='center'>{s['duration']}s</td>
+              <td class='fail-msg'>{s['fail_msg']}</td>
+            </tr>"""
+
+# ─── Build run history table rows ─────────────────────────────────────────────
+history_rows = ""
+for h in reversed(history):
+    rate_col = colour(h["pass_rate"])
+    stab_col = colour(h["stability"], "stability_score")
+    verdict  = "✅ PASS" if h["fail"] == 0 else f"❌ {h['fail']} FAILED"
+    verdict_col = "#27AE60" if h["fail"] == 0 else "#C0392B"
+    history_rows += f"""
+    <tr>
+      <td class='center'>#{h['run_num']}</td>
+      <td class='center'>{h['sha']}</td>
+      <td>{h['timestamp']}</td>
+      <td class='center'><b style='color:{verdict_col}'>{verdict}</b></td>
+      <td class='center'>{h['pass']} / {h['pass'] + h['fail']}</td>
+      <td class='center' style='color:{rate_col}'><b>{h['pass_rate']}%</b></td>
+      <td class='center' style='color:{stab_col}'>{h['stability']}</td>
+      <td class='center'>{h['duration']}s</td>
+    </tr>"""
+
+# ─── Overall verdict for this run ─────────────────────────────────────────────
+verdict_text  = "ALL TESTS PASSED" if total_fail == 0 else f"{total_fail} TEST{'S' if total_fail > 1 else ''} FAILED"
+verdict_bg    = "#1E8449" if total_fail == 0 else "#922B21"
+verdict_icon  = "✅" if total_fail == 0 else "❌"
+
 # ─── AI suggestions section ───────────────────────────────────────────────────
 suggestion_html = ""
 for feat in features:
@@ -281,6 +319,25 @@ html = f"""<!DOCTYPE html>
     <a href="{cfg['project']['repo_url']}/actions" target="_blank">View CI runs →</a>
   </div>
 
+  <!-- ── Execution Summary Banner ── -->
+  <div class="card grid-1 summary-banner" style="background:{verdict_bg};color:white;margin-bottom:16px;">
+    <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px;">
+      <div>
+        <div style="font-size:1.6rem;font-weight:800;">{verdict_icon} {verdict_text}</div>
+        <div style="font-size:0.85rem;opacity:0.85;margin-top:4px;">
+          Run #{run_num} &nbsp;·&nbsp; Commit {sha} &nbsp;·&nbsp; {now_utc}
+        </div>
+      </div>
+      <div style="display:flex;gap:24px;text-align:center;">
+        <div><div style="font-size:1.8rem;font-weight:800;">{total_scenarios}</div><div style="font-size:0.75rem;opacity:0.8;">TOTAL</div></div>
+        <div><div style="font-size:1.8rem;font-weight:800;color:#ABEBC6;">{total_pass}</div><div style="font-size:0.75rem;opacity:0.8;">PASSED</div></div>
+        <div><div style="font-size:1.8rem;font-weight:800;color:#F1948A;">{total_fail}</div><div style="font-size:0.75rem;opacity:0.8;">FAILED</div></div>
+        <div><div style="font-size:1.8rem;font-weight:800;">{pass_rate}%</div><div style="font-size:0.75rem;opacity:0.8;">PASS RATE</div></div>
+        <div><div style="font-size:1.8rem;font-weight:800;">{round(total_duration)}s</div><div style="font-size:0.75rem;opacity:0.8;">DURATION</div></div>
+      </div>
+    </div>
+  </div>
+
   <!-- ── KPI Row ── -->
   <div class="grid-4">
     <div class="card">
@@ -357,6 +414,27 @@ html = f"""<!DOCTYPE html>
         </thead>
         <tbody>
           {scenario_rows}
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- ── Failed Scenarios (only shown if there are failures) ── -->
+  {'<div class="card grid-1" style="border-left:4px solid #C0392B;"><h2 style="color:#C0392B;">❌ Failed Scenarios — This Run</h2><div class="table-wrap" style="margin-top:12px"><table><thead><tr><th>Feature</th><th>Scenario</th><th>Duration</th><th>Failure Detail</th></tr></thead><tbody>' + failed_rows + '</tbody></table></div></div>' if total_fail > 0 else '<div class="card grid-1" style="border-left:4px solid #27AE60;"><h2 style="color:#27AE60;">✅ No Failures — All Scenarios Passed This Run</h2></div>'}
+
+  <!-- ── Run History Table ── -->
+  <div class="card grid-1">
+    <h2>📋 Execution History (last {len(history)} runs)</h2>
+    <div class="table-wrap" style="margin-top:12px;max-height:400px;overflow-y:auto">
+      <table>
+        <thead>
+          <tr>
+            <th>Run</th><th>Commit</th><th>Timestamp</th><th>Result</th>
+            <th>Passed/Total</th><th>Pass Rate</th><th>Stability</th><th>Duration</th>
+          </tr>
+        </thead>
+        <tbody>
+          {history_rows}
         </tbody>
       </table>
     </div>
