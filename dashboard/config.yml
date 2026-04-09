@@ -1,0 +1,72 @@
+# ─────────────────────────────────────────────────────────────────────────────
+# Dashboard Configuration
+# Edit this file to customise thresholds, labels, and metric weights.
+# Changes take effect on the next CI run automatically.
+# ─────────────────────────────────────────────────────────────────────────────
+
+project:
+  name: "ClaudeEvalAcademyProj"
+  app_url: "https://www.saucedemo.com"
+  repo_url: "https://github.com/heli-t-00/ClaudeEvalAcademyProj"
+  team: "Claude QA Team"
+
+# Pass rate thresholds — controls traffic-light colours on the dashboard
+thresholds:
+  pass_rate:
+    green: 95       # >= 95% = green
+    amber: 80       # >= 80% = amber
+    red: 0          # < 80%  = red
+  stability_score:
+    green: 90
+    amber: 70
+    red: 0
+
+# Stability Score weights (AI-generated metric)
+# Stability Score = (pass_rate * pass_weight) + (no_flake_bonus * flake_weight)
+# Penalises scenarios that pass overall but have flaked in prior runs
+stability:
+  pass_weight: 0.7
+  consistency_weight: 0.3
+  # Known historically flaky scenarios (from risk analysis — auto-updated by CI)
+  flaky_scenarios:
+    - "Complete purchase via Finish button"
+    - "Cancel on order overview returns to inventory page"
+    - "Cart is empty after successful purchase"
+    - "User can log back in after logging out"
+
+# Feature risk levels (from risk report) — shown as badges on dashboard
+feature_risk:
+  "Shopping Cart": "MEDIUM"
+  "Checkout": "CRITICAL"
+  "Inventory / Product Listings": "STABLE"
+  "Login": "STABLE"
+  "Logout": "MEDIUM"
+
+# AI improvement suggestions — shown when pass rate drops below threshold
+# Format: feature_name: [list of suggestions]
+ai_suggestions:
+  "Checkout":
+    - "All checkout buttons require JS click in headless CI — monitor on Chrome upgrades"
+    - "fillForm uses native React setter — re-validate if SauceDemo React version changes"
+    - "Add retry logic for fillForm to handle intermittent React state settling delays"
+  "Shopping Cart":
+    - "addToCartByName uses data-test selectors — stable, but verify after any DOM changes"
+    - "Cart badge count depends on React state flush — consider adding badge count assertion after each add"
+  "Logout":
+    - "Post-logout re-login uses JS fill — validate if SauceDemo adds CSRF protection"
+    - "Burger menu animation timeout set to 10s — reduce to 5s if performance improves"
+  "Login":
+    - "All scenarios stable — no immediate action required"
+    - "Consider adding MFA / 2FA test scenarios when feature is implemented"
+  "Inventory / Product Listings":
+    - "All scenarios stable — no immediate action required"
+    - "Add visual regression tests for product images when tooling is available"
+
+# Metrics to display on dashboard
+metrics:
+  - total_scenarios
+  - pass_rate
+  - stability_score
+  - coverage_by_feature
+  - duration_seconds
+  - flaky_count

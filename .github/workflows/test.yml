@@ -82,3 +82,21 @@ jobs:
           check_name: Cucumber Test Results
           include_passed: true
           detailed_summary: true
+
+      # ── 8. Generate live dashboard ────────────────────────────────────────────
+      - name: Install dashboard dependencies
+        if: always()
+        run: pip install pyyaml
+
+      - name: Generate HTML dashboard
+        if: always()
+        run: python dashboard/generate.py
+
+      # ── 9. Deploy dashboard to GitHub Pages ──────────────────────────────────
+      - name: Deploy to GitHub Pages
+        if: always()
+        uses: peaceiris/actions-gh-pages@v3
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./docs
+          commit_message: "Dashboard update — ${{ github.run_number }} [${{ github.sha }}]"
