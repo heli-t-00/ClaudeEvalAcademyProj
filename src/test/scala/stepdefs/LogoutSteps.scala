@@ -12,8 +12,10 @@ class LogoutSteps(context: TestContext):
 
   @When("the user opens the burger menu")
   def openBurgerMenu(): Unit =
-    context.driver.findElement(burgerButton).click()
-    WebDriverWait(context.driver, java.time.Duration.ofSeconds(10))
+    val btn = WebDriverWait(context.driver, java.time.Duration.ofSeconds(10))
+      .until(ExpectedConditions.elementToBeClickable(burgerButton))
+    context.driver.asInstanceOf[JavascriptExecutor].executeScript("arguments[0].click()", btn)
+    WebDriverWait(context.driver, java.time.Duration.ofSeconds(15))
       .until(ExpectedConditions.elementToBeClickable(logoutLink))
 
   @When("the user clicks Logout")
