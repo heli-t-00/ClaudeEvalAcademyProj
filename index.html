@@ -1,0 +1,864 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta http-equiv="refresh" content="900">
+<title>ClaudeEvalAcademyProj — Test Dashboard</title>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+<style>
+  :root {
+    --dark: #1C2833; --green: #27AE60; --orange: #E67E22;
+    --red: #C0392B; --blue: #2980B9; --light: #F2F3F4;
+    --white: #fff; --mid: #BDC3C7; --text: #2C3E50;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: 'Segoe UI', Arial, sans-serif; background: #EAECEE; color: var(--text); }
+
+  /* ── Header ── */
+  .header { background: var(--dark); color: white; padding: 20px 32px; display:flex; justify-content:space-between; align-items:center; }
+  .header h1 { font-size: 1.4rem; font-weight: 700; }
+  .header .meta { font-size: 0.8rem; opacity: 0.7; text-align:right; }
+  .header a { color: #85C1E9; text-decoration:none; }
+
+  /* ── Layout ── */
+  .container { max-width: 1400px; margin: 0 auto; padding: 24px; }
+  .grid-4 { display:grid; grid-template-columns: repeat(4,1fr); gap:16px; margin-bottom:24px; }
+  .grid-2 { display:grid; grid-template-columns: 1fr 1fr; gap:16px; margin-bottom:24px; }
+  .grid-1 { margin-bottom:24px; }
+  @media(max-width:900px) { .grid-4,.grid-2 { grid-template-columns:1fr 1fr; } }
+  @media(max-width:500px) { .grid-4,.grid-2 { grid-template-columns:1fr; } }
+
+  /* ── Cards ── */
+  .card { background:white; border-radius:10px; padding:20px; box-shadow:0 2px 6px rgba(0,0,0,0.07); }
+  .card h2 { font-size:0.85rem; text-transform:uppercase; letter-spacing:.08em; color:#7F8C8D; margin-bottom:12px; }
+
+  /* ── KPI tiles ── */
+  .kpi-value { font-size:2.4rem; font-weight:800; line-height:1; }
+  .kpi-label { font-size:0.8rem; color:#7F8C8D; margin-top:4px; }
+
+  /* ── Status bar ── */
+  .status-bar { height:10px; border-radius:5px; background:var(--light); overflow:hidden; margin-top:8px; }
+  .status-bar-fill { height:100%; border-radius:5px; transition:width .4s; }
+
+  /* ── Badges ── */
+  .badge { display:inline-block; padding:2px 8px; border-radius:4px; font-size:0.72rem;
+            font-weight:700; color:white; margin-right:4px; }
+  .badge-flaky { background:#8E44AD; }
+
+  /* ── Feature cards ── */
+  .feature-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(240px,1fr)); gap:12px; }
+  .feat-card { border-radius:8px; padding:14px; background:var(--light); border-left:4px solid var(--mid); }
+  .feat-card .feat-name { font-weight:700; font-size:0.9rem; margin-bottom:6px; }
+  .feat-card .feat-stats { font-size:0.8rem; color:#555; }
+  .feat-card .feat-bar { display:flex; height:6px; border-radius:3px; overflow:hidden; margin-top:8px; }
+  .feat-card .bar-pass { background:var(--green); }
+  .feat-card .bar-fail { background:var(--red); }
+
+  /* ── Table ── */
+  .table-wrap { overflow-x:auto; }
+  table { width:100%; border-collapse:collapse; font-size:0.82rem; }
+  th { background:var(--dark); color:white; padding:10px 12px; text-align:left; position:sticky; top:0; }
+  td { padding:8px 12px; border-bottom:1px solid #EAECEE; vertical-align:top; }
+  tr:hover td { background:#F8F9FA; }
+  .row-failed td { background:#FEF0F0; }
+  .fail-msg { color:var(--red); font-size:0.78rem; max-width:400px; }
+  .center { text-align:center; }
+
+  /* ── Suggestions ── */
+  .suggestion-block { margin-bottom:14px; padding:14px; background:var(--light); border-radius:8px; }
+  .suggestion-title { font-weight:700; margin-bottom:8px; display:flex; align-items:center; gap:8px; }
+  .suggestion-block ul { padding-left:20px; }
+  .suggestion-block li { font-size:0.85rem; margin-bottom:4px; color:#555; }
+
+  /* ── Trend chip ── */
+  .trend { font-size:0.78rem; padding:3px 8px; border-radius:12px; color:white; margin-left:8px; }
+
+  /* ── Footer ── */
+  .footer { text-align:center; font-size:0.75rem; color:#999; padding:20px; }
+  .refresh-note { font-size:0.72rem; color:#999; text-align:right; margin-bottom:8px; }
+</style>
+</head>
+<body>
+
+<div class="header">
+  <div>
+    <h1>🧪 ClaudeEvalAcademyProj — Test Dashboard</h1>
+    <div style="font-size:0.8rem;opacity:0.7;margin-top:4px;">
+      <a href="https://www.saucedemo.com" target="_blank">https://www.saucedemo.com</a>
+      &nbsp;|&nbsp;
+      <a href="https://github.com/heli-t-00/ClaudeEvalAcademyProj/actions" target="_blank">GitHub Actions</a>
+    </div>
+  </div>
+  <div class="meta">
+    Run #9 &nbsp;|&nbsp; ba643fc<br>
+    2026-04-09 08:45 UTC<br>
+    <span style="opacity:0.5">Auto-refreshes every 15 min</span>
+  </div>
+</div>
+
+<div class="container">
+
+  <div class="refresh-note">⏱ Page auto-refreshes every 15 minutes &nbsp;|&nbsp;
+    <a href="https://github.com/heli-t-00/ClaudeEvalAcademyProj/actions" target="_blank">View CI runs →</a>
+  </div>
+
+  <!-- ── KPI Row ── -->
+  <div class="grid-4">
+    <div class="card">
+      <h2>Total Scenarios</h2>
+      <div class="kpi-value" style="color:var(--blue)">88</div>
+      <div class="kpi-label">5 features</div>
+    </div>
+    <div class="card">
+      <h2>Pass Rate</h2>
+      <div class="kpi-value" style="color:#27AE60">100.0%</div>
+      <div class="status-bar">
+        <div class="status-bar-fill" style="width:100.0%;background:#27AE60"></div>
+      </div>
+      <div class="kpi-label">88 passed / 0 failed</div>
+    </div>
+    <div class="card">
+      <h2>⭐ Stability Score <span title="AI metric: weighted pass rate accounting for historically flaky tests" style="cursor:help;font-size:0.8rem">ℹ️</span></h2>
+      <div class="kpi-value" style="color:#27AE60">100.0</div>
+      <div class="status-bar">
+        <div class="status-bar-fill" style="width:100.0%;background:#27AE60"></div>
+      </div>
+      <div class="kpi-label">Flaky scenarios passing: 4/4</div>
+    </div>
+    <div class="card">
+      <h2>Execution Time</h2>
+      <div class="kpi-value" style="color:var(--text)">101s</div>
+      <div class="kpi-label">1.7 minutes total</div>
+    </div>
+  </div>
+
+  <!-- ── Charts Row ── -->
+  <div class="grid-2">
+    <div class="card">
+      <h2>Pass / Fail by Feature</h2>
+      <canvas id="barChart" height="200"></canvas>
+    </div>
+    <div class="card">
+      <h2>Pass Rate Trend (last 1 runs)</h2>
+      <canvas id="trendChart" height="200"></canvas>
+    </div>
+  </div>
+
+  <!-- ── Feature Coverage ── -->
+  <div class="card grid-1">
+    <h2>Feature Coverage</h2>
+    <div class="feature-grid" style="margin-top:12px">
+      
+      <div class="feat-card" style="border-left-color:#E67E22">
+        <div class="feat-name">
+          Shopping Cart
+          <span class="badge" style="background:#E67E22">MEDIUM</span>
+        </div>
+        <div class="feat-stats">
+          ✅ 22 passed &nbsp; 🎉 all passed
+          &nbsp;|&nbsp; 22 total
+        </div>
+        <div class="feat-bar">
+          <div class="bar-pass" style="width:100%"></div>
+          <div class="bar-fail" style="width:0%"></div>
+        </div>
+      </div>
+      <div class="feat-card" style="border-left-color:#C0392B">
+        <div class="feat-name">
+          Checkout
+          <span class="badge" style="background:#C0392B">CRITICAL</span>
+        </div>
+        <div class="feat-stats">
+          ✅ 18 passed &nbsp; 🎉 all passed
+          &nbsp;|&nbsp; 18 total
+        </div>
+        <div class="feat-bar">
+          <div class="bar-pass" style="width:100%"></div>
+          <div class="bar-fail" style="width:0%"></div>
+        </div>
+      </div>
+      <div class="feat-card" style="border-left-color:#27AE60">
+        <div class="feat-name">
+          Inventory / Product Listings
+          <span class="badge" style="background:#27AE60">STABLE</span>
+        </div>
+        <div class="feat-stats">
+          ✅ 16 passed &nbsp; 🎉 all passed
+          &nbsp;|&nbsp; 16 total
+        </div>
+        <div class="feat-bar">
+          <div class="bar-pass" style="width:100%"></div>
+          <div class="bar-fail" style="width:0%"></div>
+        </div>
+      </div>
+      <div class="feat-card" style="border-left-color:#27AE60">
+        <div class="feat-name">
+          Login
+          <span class="badge" style="background:#27AE60">STABLE</span>
+        </div>
+        <div class="feat-stats">
+          ✅ 26 passed &nbsp; 🎉 all passed
+          &nbsp;|&nbsp; 26 total
+        </div>
+        <div class="feat-bar">
+          <div class="bar-pass" style="width:100%"></div>
+          <div class="bar-fail" style="width:0%"></div>
+        </div>
+      </div>
+      <div class="feat-card" style="border-left-color:#E67E22">
+        <div class="feat-name">
+          Logout
+          <span class="badge" style="background:#E67E22">MEDIUM</span>
+        </div>
+        <div class="feat-stats">
+          ✅ 6 passed &nbsp; 🎉 all passed
+          &nbsp;|&nbsp; 6 total
+        </div>
+        <div class="feat-bar">
+          <div class="bar-pass" style="width:100%"></div>
+          <div class="bar-fail" style="width:0%"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── Scenario Table ── -->
+  <div class="card grid-1">
+    <h2>Scenario Results</h2>
+    <div class="table-wrap" style="margin-top:12px;max-height:500px;overflow-y:auto">
+      <table>
+        <thead>
+          <tr>
+            <th>Feature</th><th>Scenario</th><th>Duration</th><th>Failure Detail</th>
+          </tr>
+        </thead>
+        <tbody>
+          
+        <tr class='row-passed'>
+          <td>Shopping Cart</td>
+          <td>✅ </td>
+          <td class='center'>0.75s</td>
+          <td>—</td>
+        </tr>
+        <tr class='row-passed'>
+          <td>Shopping Cart</td>
+          <td>✅ Add a single item to the cart from the inventory page</td>
+          <td class='center'>0.33s</td>
+          <td>—</td>
+        </tr>
+        <tr class='row-passed'>
+          <td>Shopping Cart</td>
+          <td>✅ </td>
+          <td class='center'>0.56s</td>
+          <td>—</td>
+        </tr>
+        <tr class='row-passed'>
+          <td>Shopping Cart</td>
+          <td>✅ Add multiple items to the cart</td>
+          <td class='center'>0.34s</td>
+          <td>—</td>
+        </tr>
+        <tr class='row-passed'>
+          <td>Shopping Cart</td>
+          <td>✅ </td>
+          <td class='center'>0.56s</td>
+          <td>—</td>
+        </tr>
+        <tr class='row-passed'>
+          <td>Shopping Cart</td>
+          <td>✅ Add item to cart from the product detail page</td>
+          <td class='center'>0.3s</td>
+          <td>—</td>
+        </tr>
+        <tr class='row-passed'>
+          <td>Shopping Cart</td>
+          <td>✅ </td>
+          <td class='center'>0.56s</td>
+          <td>—</td>
+        </tr>
+        <tr class='row-passed'>
+          <td>Shopping Cart</td>
+          <td>✅ Add all available items to the cart</td>
+          <td class='center'>0.48s</td>
+          <td>—</td>
+        </tr>
+        <tr class='row-passed'>
+          <td>Shopping Cart</td>
+          <td>✅ </td>
+          <td class='center'>0.57s</td>
+          <td>—</td>
+        </tr>
+        <tr class='row-passed'>
+          <td>Shopping Cart</td>
+          <td>✅ Cart contents persist after page refresh</td>
+          <td class='center'>0.37s</td>
+          <td>—</td>
+        </tr>
+        <tr class='row-passed'>
+          <td>Shopping Cart</td>
+          <td>✅ </td>
+          <td class='center'>0.57s</td>
+          <td>—</td>
+        </tr>
+        <tr class='row-passed'>
+          <td>Shopping Cart</td>
+          <td>✅ Cart page shows all added items with correct details</td>
+          <td class='center'>0.32s</td>
+          <td>—</td>
+        </tr>
+        <tr class='row-passed'>
+          <td>Shopping Cart</td>
+          <td>✅ </td>
+          <td class='center'>0.55s</td>
+          <td>—</td>
+        </tr>
+        <tr class='row-passed'>
+          <td>Shopping Cart</td>
+          <td>✅ Cart page shows empty state when no items added</td>
+          <td class='center'>10.19s</td>
+          <td>—</td>
+        </tr>
+        <tr class='row-passed'>
+          <td>Shopping Cart</td>
+          <td>✅ </td>
+          <td class='center'>0.56s</td>
+          <td>—</td>
+        </tr>
+        <tr class='row-passed'>
+          <td>Shopping Cart</td>
+          <td>✅ Continue Shopping button returns to inventory</td>
+          <td class='center'>0.29s</td>
+          <td>—</td>
+        </tr>
+        <tr class='row-passed'>
+          <td>Shopping Cart</td>
+          <td>✅ </td>
+          <td class='center'>0.54s</td>
+          <td>—</td>
+        </tr>
+        <tr class='row-passed'>
+          <td>Shopping Cart</td>
+          <td>✅ Remove item via Remove button on the inventory page</td>
+          <td class='center'>10.34s</td>
+          <td>—</td>
+        </tr>
+        <tr class='row-passed'>
+          <td>Shopping Cart</td>
+          <td>✅ </td>
+          <td class='center'>0.56s</td>
+          <td>—</td>
+        </tr>
+        <tr class='row-passed'>
+          <td>Shopping Cart</td>
+          <td>✅ Remove item from the cart page</td>
+          <td class='center'>0.29s</td>
+          <td>—</td>
+        </tr>
+        <tr class='row-passed'>
+          <td>Shopping Cart</td>
+          <td>✅ </td>
+          <td class='center'>0.58s</td>
+          <td>—</td>
+        </tr>
+        <tr class='row-passed'>
+          <td>Shopping Cart</td>
+          <td>✅ Removing the last item leaves the cart empty</td>
+          <td class='center'>10.28s</td>
+          <td>—</td>
+        </tr>
+        <tr class='row-passed'>
+          <td>Checkout</td>
+          <td>✅ </td>
+          <td class='center'>0.65s</td>
+          <td>—</td>
+        </tr>
+        <tr class='row-passed'>
+          <td>Checkout</td>
+          <td>✅ Complete checkout with valid information</td>
+          <td class='center'>0.25s</td>
+          <td>—</td>
+        </tr>
+        <tr class='row-passed'>
+          <td>Checkout</td>
+          <td>✅ </td>
+          <td class='center'>0.66s</td>
+          <td>—</td>
+        </tr>
+        <tr class='row-passed'>
+          <td>Checkout</td>
+          <td>✅ Complete purchase via Finish button <span class='badge badge-flaky'>FLAKY</span></td>
+          <td class='center'>0.24s</td>
+          <td>—</td>
+        </tr>
+        <tr class='row-passed'>
+          <td>Checkout</td>
+          <td>✅ </td>
+          <td class='center'>0.66s</td>
+          <td>—</td>
+        </tr>
+        <tr class='row-passed'>
+          <td>Checkout</td>
+          <td>✅ Cart is empty after successful purchase <span class='badge badge-flaky'>FLAKY</span></td>
+          <td class='center'>10.33s</td>
+          <td>—</td>
+        </tr>
+        <tr class='row-passed'>
+          <td>Checkout</td>
+          <td>✅ </td>
+          <td class='center'>0.66s</td>
+          <td>—</td>
+        </tr>
+        <tr class='row-passed'>
+          <td>Checkout</td>
+          <td>✅ Checkout fails when first name is missing</td>
+          <td class='center'>3.24s</td>
+          <td>—</td>
+        </tr>
+        <tr class='row-passed'>
+          <td>Checkout</td>
+          <td>✅ </td>
+          <td class='center'>0.66s</td>
+          <td>—</td>
+        </tr>
+        <tr class='row-passed'>
+          <td>Checkout</td>
+          <td>✅ Checkout fails when last name is missing</td>
+          <td class='center'>3.25s</td>
+          <td>—</td>
+        </tr>
+        <tr class='row-passed'>
+          <td>Checkout</td>
+          <td>✅ </td>
+          <td class='center'>0.66s</td>
+          <td>—</td>
+        </tr>
+        <tr class='row-passed'>
+          <td>Checkout</td>
+          <td>✅ Checkout fails when postal code is missing</td>
+          <td class='center'>3.24s</td>
+          <td>—</td>
+        </tr>
+        <tr class='row-passed'>
+          <td>Checkout</td>
+          <td>✅ </td>
+          <td class='center'>0.67s</td>
+          <td>—</td>
+        </tr>
+        <tr class='row-passed'>
+          <td>Checkout</td>
+          <td>✅ Cancel on checkout step 1 returns to cart</td>
+          <td class='center'>0.18s</td>
+          <td>—</td>
+        </tr>
+        <tr class='row-passed'>
+          <td>Checkout</td>
+          <td>✅ </td>
+          <td class='center'>0.64s</td>
+          <td>—</td>
+        </tr>
+        <tr class='row-passed'>
+          <td>Checkout</td>
+          <td>✅ Cancel on order overview returns to inventory page <span class='badge badge-flaky'>FLAKY</span></td>
+          <td class='center'>0.28s</td>
+          <td>—</td>
+        </tr>
+        <tr class='row-passed'>
+          <td>Checkout</td>
+          <td>✅ </td>
+          <td class='center'>0.67s</td>
+          <td>—</td>
+        </tr>
+        <tr class='row-passed'>
+          <td>Checkout</td>
+          <td>✅ Order overview shows correct subtotal and tax</td>
+          <td class='center'>0.25s</td>
+          <td>—</td>
+        </tr>
+        <tr class='row-passed'>
+          <td>Inventory / Product Listings</td>
+          <td>✅ </td>
+          <td class='center'>0.53s</td>
+          <td>—</td>
+        </tr>
+        <tr class='row-passed'>
+          <td>Inventory / Product Listings</td>
+          <td>✅ Inventory page displays product cards with all required fields</td>
+          <td class='center'>0.32s</td>
+          <td>—</td>
+        </tr>
+        <tr class='row-passed'>
+          <td>Inventory / Product Listings</td>
+          <td>✅ </td>
+          <td class='center'>0.54s</td>
+          <td>—</td>
+        </tr>
+        <tr class='row-passed'>
+          <td>Inventory / Product Listings</td>
+          <td>✅ Product images load without broken links</td>
+          <td class='center'>0.23s</td>
+          <td>—</td>
+        </tr>
+        <tr class='row-passed'>
+          <td>Inventory / Product Listings</td>
+          <td>✅ </td>
+          <td class='center'>0.53s</td>
+          <td>—</td>
+        </tr>
+        <tr class='row-passed'>
+          <td>Inventory / Product Listings</td>
+          <td>✅ Clicking a product name navigates to the product detail page</td>
+          <td class='center'>0.25s</td>
+          <td>—</td>
+        </tr>
+        <tr class='row-passed'>
+          <td>Inventory / Product Listings</td>
+          <td>✅ </td>
+          <td class='center'>0.57s</td>
+          <td>—</td>
+        </tr>
+        <tr class='row-passed'>
+          <td>Inventory / Product Listings</td>
+          <td>✅ Sort products alphabetically A to Z</td>
+          <td class='center'>0.3s</td>
+          <td>—</td>
+        </tr>
+        <tr class='row-passed'>
+          <td>Inventory / Product Listings</td>
+          <td>✅ </td>
+          <td class='center'>0.55s</td>
+          <td>—</td>
+        </tr>
+        <tr class='row-passed'>
+          <td>Inventory / Product Listings</td>
+          <td>✅ Sort products alphabetically Z to A</td>
+          <td class='center'>0.32s</td>
+          <td>—</td>
+        </tr>
+        <tr class='row-passed'>
+          <td>Inventory / Product Listings</td>
+          <td>✅ </td>
+          <td class='center'>0.54s</td>
+          <td>—</td>
+        </tr>
+        <tr class='row-passed'>
+          <td>Inventory / Product Listings</td>
+          <td>✅ Sort products by price low to high</td>
+          <td class='center'>0.29s</td>
+          <td>—</td>
+        </tr>
+        <tr class='row-passed'>
+          <td>Inventory / Product Listings</td>
+          <td>✅ </td>
+          <td class='center'>0.58s</td>
+          <td>—</td>
+        </tr>
+        <tr class='row-passed'>
+          <td>Inventory / Product Listings</td>
+          <td>✅ Sort products by price high to low</td>
+          <td class='center'>0.31s</td>
+          <td>—</td>
+        </tr>
+        <tr class='row-passed'>
+          <td>Inventory / Product Listings</td>
+          <td>✅ </td>
+          <td class='center'>0.55s</td>
+          <td>—</td>
+        </tr>
+        <tr class='row-passed'>
+          <td>Inventory / Product Listings</td>
+          <td>✅ Sort order resets to default after returning from product detail</td>
+          <td class='center'>10.3s</td>
+          <td>—</td>
+        </tr>
+        <tr class='row-passed'>
+          <td>Login</td>
+          <td>✅ </td>
+          <td class='center'>0.22s</td>
+          <td>—</td>
+        </tr>
+        <tr class='row-passed'>
+          <td>Login</td>
+          <td>✅ Successful login with valid credentials</td>
+          <td class='center'>0.52s</td>
+          <td>—</td>
+        </tr>
+        <tr class='row-passed'>
+          <td>Login</td>
+          <td>✅ </td>
+          <td class='center'>0.22s</td>
+          <td>—</td>
+        </tr>
+        <tr class='row-passed'>
+          <td>Login</td>
+          <td>✅ Login with different valid user accounts</td>
+          <td class='center'>5.54s</td>
+          <td>—</td>
+        </tr>
+        <tr class='row-passed'>
+          <td>Login</td>
+          <td>✅ </td>
+          <td class='center'>0.23s</td>
+          <td>—</td>
+        </tr>
+        <tr class='row-passed'>
+          <td>Login</td>
+          <td>✅ Login with different valid user accounts</td>
+          <td class='center'>0.51s</td>
+          <td>—</td>
+        </tr>
+        <tr class='row-passed'>
+          <td>Login</td>
+          <td>✅ </td>
+          <td class='center'>0.22s</td>
+          <td>—</td>
+        </tr>
+        <tr class='row-passed'>
+          <td>Login</td>
+          <td>✅ Login with different valid user accounts</td>
+          <td class='center'>0.53s</td>
+          <td>—</td>
+        </tr>
+        <tr class='row-passed'>
+          <td>Login</td>
+          <td>✅ </td>
+          <td class='center'>0.22s</td>
+          <td>—</td>
+        </tr>
+        <tr class='row-passed'>
+          <td>Login</td>
+          <td>✅ Login with different valid user accounts</td>
+          <td class='center'>0.54s</td>
+          <td>—</td>
+        </tr>
+        <tr class='row-passed'>
+          <td>Login</td>
+          <td>✅ </td>
+          <td class='center'>0.22s</td>
+          <td>—</td>
+        </tr>
+        <tr class='row-passed'>
+          <td>Login</td>
+          <td>✅ Login fails with incorrect password</td>
+          <td class='center'>0.43s</td>
+          <td>—</td>
+        </tr>
+        <tr class='row-passed'>
+          <td>Login</td>
+          <td>✅ </td>
+          <td class='center'>0.23s</td>
+          <td>—</td>
+        </tr>
+        <tr class='row-passed'>
+          <td>Login</td>
+          <td>✅ Login fails with unknown username</td>
+          <td class='center'>0.43s</td>
+          <td>—</td>
+        </tr>
+        <tr class='row-passed'>
+          <td>Login</td>
+          <td>✅ </td>
+          <td class='center'>0.23s</td>
+          <td>—</td>
+        </tr>
+        <tr class='row-passed'>
+          <td>Login</td>
+          <td>✅ Login fails when username is empty</td>
+          <td class='center'>0.36s</td>
+          <td>—</td>
+        </tr>
+        <tr class='row-passed'>
+          <td>Login</td>
+          <td>✅ </td>
+          <td class='center'>0.23s</td>
+          <td>—</td>
+        </tr>
+        <tr class='row-passed'>
+          <td>Login</td>
+          <td>✅ Login fails when password is empty</td>
+          <td class='center'>0.35s</td>
+          <td>—</td>
+        </tr>
+        <tr class='row-passed'>
+          <td>Login</td>
+          <td>✅ </td>
+          <td class='center'>0.23s</td>
+          <td>—</td>
+        </tr>
+        <tr class='row-passed'>
+          <td>Login</td>
+          <td>✅ Login fails when both fields are empty</td>
+          <td class='center'>0.28s</td>
+          <td>—</td>
+        </tr>
+        <tr class='row-passed'>
+          <td>Login</td>
+          <td>✅ </td>
+          <td class='center'>0.23s</td>
+          <td>—</td>
+        </tr>
+        <tr class='row-passed'>
+          <td>Login</td>
+          <td>✅ Login is not vulnerable to SQL injection</td>
+          <td class='center'>0.45s</td>
+          <td>—</td>
+        </tr>
+        <tr class='row-passed'>
+          <td>Login</td>
+          <td>✅ </td>
+          <td class='center'>0.23s</td>
+          <td>—</td>
+        </tr>
+        <tr class='row-passed'>
+          <td>Login</td>
+          <td>✅ Locked out user cannot login</td>
+          <td class='center'>0.44s</td>
+          <td>—</td>
+        </tr>
+        <tr class='row-passed'>
+          <td>Login</td>
+          <td>✅ </td>
+          <td class='center'>0.23s</td>
+          <td>—</td>
+        </tr>
+        <tr class='row-passed'>
+          <td>Login</td>
+          <td>✅ Inventory is not accessible without login</td>
+          <td class='center'>0.27s</td>
+          <td>—</td>
+        </tr>
+        <tr class='row-passed'>
+          <td>Logout</td>
+          <td>✅ </td>
+          <td class='center'>0.54s</td>
+          <td>—</td>
+        </tr>
+        <tr class='row-passed'>
+          <td>Logout</td>
+          <td>✅ User can log out via the burger menu</td>
+          <td class='center'>0.71s</td>
+          <td>—</td>
+        </tr>
+        <tr class='row-passed'>
+          <td>Logout</td>
+          <td>✅ </td>
+          <td class='center'>0.57s</td>
+          <td>—</td>
+        </tr>
+        <tr class='row-passed'>
+          <td>Logout</td>
+          <td>✅ Inventory page is not accessible after logout</td>
+          <td class='center'>0.83s</td>
+          <td>—</td>
+        </tr>
+        <tr class='row-passed'>
+          <td>Logout</td>
+          <td>✅ </td>
+          <td class='center'>0.55s</td>
+          <td>—</td>
+        </tr>
+        <tr class='row-passed'>
+          <td>Logout</td>
+          <td>✅ User can log back in after logging out <span class='badge badge-flaky'>FLAKY</span></td>
+          <td class='center'>0.86s</td>
+          <td>—</td>
+        </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- ── AI Suggestions ── -->
+  <div class="card grid-1">
+    <h2>🤖 AI-Suggested Improvements</h2>
+    <div style="margin-top:12px">
+      
+        <div class='suggestion-block'>
+          <div class='suggestion-title'>
+            <span class='badge' style='background:#E67E22'>MEDIUM</span>
+            Shopping Cart
+          </div>
+          <ul><li>addToCartByName uses data-test selectors — stable, but verify after any DOM changes</li><li>Cart badge count depends on React state flush — consider adding badge count assertion after each add</li></ul>
+        </div>
+        <div class='suggestion-block'>
+          <div class='suggestion-title'>
+            <span class='badge' style='background:#C0392B'>CRITICAL</span>
+            Checkout
+          </div>
+          <ul><li>All checkout buttons require JS click in headless CI — monitor on Chrome upgrades</li><li>fillForm uses native React setter — re-validate if SauceDemo React version changes</li><li>Add retry logic for fillForm to handle intermittent React state settling delays</li></ul>
+        </div>
+        <div class='suggestion-block'>
+          <div class='suggestion-title'>
+            <span class='badge' style='background:#27AE60'>STABLE</span>
+            Inventory / Product Listings
+          </div>
+          <ul><li>All scenarios stable — no immediate action required</li><li>Add visual regression tests for product images when tooling is available</li></ul>
+        </div>
+        <div class='suggestion-block'>
+          <div class='suggestion-title'>
+            <span class='badge' style='background:#27AE60'>STABLE</span>
+            Login
+          </div>
+          <ul><li>All scenarios stable — no immediate action required</li><li>Consider adding MFA / 2FA test scenarios when feature is implemented</li></ul>
+        </div>
+        <div class='suggestion-block'>
+          <div class='suggestion-title'>
+            <span class='badge' style='background:#E67E22'>MEDIUM</span>
+            Logout
+          </div>
+          <ul><li>Post-logout re-login uses JS fill — validate if SauceDemo adds CSRF protection</li><li>Burger menu animation timeout set to 10s — reduce to 5s if performance improves</li></ul>
+        </div>
+    </div>
+  </div>
+
+</div><!-- /container -->
+
+<div class="footer">
+  Generated by Claude Code (claude-sonnet-4-6) &nbsp;|&nbsp;
+  ClaudeEvalAcademyProj &nbsp;|&nbsp; 2026-04-09 08:45 UTC
+</div>
+
+<script>
+// ── Bar chart ──
+new Chart(document.getElementById('barChart'), {
+  type: 'bar',
+  data: {
+    labels: ["Shopping Cart", "Checkout", "Inventory / Product Listings", "Login", "Logout"],
+    datasets: [
+      { label: 'Passed', data: [22, 18, 16, 26, 6], backgroundColor: '#27AE60' },
+      { label: 'Failed', data: [0, 0, 0, 0, 0], backgroundColor: '#C0392B' }
+    ]
+  },
+  options: {
+    responsive: true, plugins: { legend: { position: 'top' } },
+    scales: { x: { stacked: true }, y: { stacked: true, beginAtZero: true } }
+  }
+});
+
+// ── Trend chart ──
+new Chart(document.getElementById('trendChart'), {
+  type: 'line',
+  data: {
+    labels: ["9"],
+    datasets: [
+      {
+        label: 'Pass Rate %', data: [100.0],
+        borderColor: '#27AE60', backgroundColor: 'rgba(39,174,96,0.1)',
+        fill: true, tension: 0.3
+      },
+      {
+        label: 'Stability Score', data: [100.0],
+        borderColor: '#2980B9', backgroundColor: 'rgba(41,128,185,0.05)',
+        fill: false, tension: 0.3, borderDash: [5,5]
+      }
+    ]
+  },
+  options: {
+    responsive: true,
+    plugins: { legend: { position: 'top' } },
+    scales: { y: { min: 0, max: 100, beginAtZero: true } }
+  }
+});
+</script>
+</body>
+</html>
