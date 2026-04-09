@@ -174,6 +174,44 @@ for b in bugs:
 open_bugs   = sum(1 for b in bugs if b["status"] not in ("Done", "Closed"))
 closed_bugs = sum(1 for b in bugs if b["status"] in ("Done", "Closed"))
 
+# ─── Load AI test proposals ───────────────────────────────────────────────────
+PROPOSALS_FILE = ROOT / "dashboard" / "ai_test_proposals.json"
+proposals = []
+if PROPOSALS_FILE.exists():
+    with open(PROPOSALS_FILE) as f:
+        proposals_data = json.load(f)
+        proposals = proposals_data.get("proposals", [])
+
+def priority_colour(p):
+    return {"HIGH": "#C0392B", "MEDIUM": "#E67E22", "LOW": "#2980B9"}.get(p, "#7F8C8D")
+
+def category_icon(cat):
+    if "Regression" in cat:   return "🔁"
+    if "Flaky"     in cat:    return "⚠️"
+    if "Security"  in cat:    return "🔒"
+    if "Uncovered" in cat:    return "📋"
+    if "Persona"   in cat:    return "👤"
+    if "Post"      in cat:    return "🏁"
+    return "🔍"
+
+proposal_rows = ""
+for p in proposals:
+    cat_icon = category_icon(p["category"])
+    source_short = p["source"][:80] + "…" if len(p["source"]) > 80 else p["source"]
+    proposal_rows += f"""
+    <tr>
+      <td style='font-weight:700;color:#2980B9'>{p['id']}</td>
+      <td><span class='badge' style='background:{priority_colour(p["priority"])}'>{p['priority']}</span></td>
+      <td><span class='badge' style='background:{badge_colour(cfg["feature_risk"].get(p["feature"],"UNKNOWN"))}'>{p['feature']}</span></td>
+      <td>{cat_icon} {p['category']}</td>
+      <td style='font-weight:600'>{p['title']}</td>
+      <td style='font-size:0.78rem;color:#555'>{source_short}</td>
+    </tr>"""
+
+proposals_by_priority = {"HIGH": 0, "MEDIUM": 0, "LOW": 0}
+for p in proposals:
+    proposals_by_priority[p.get("priority","LOW")] += 1
+
 # ─── Build scenario rows ──────────────────────────────────────────────────────
 scenario_rows = ""
 for feat in features:
@@ -499,6 +537,40 @@ html = f"""<!DOCTYPE html>
         </thead>
         <tbody>
           {history_rows}
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- ── AI Test Proposals ── -->
+  <div class="card grid-1" style="border-left:4px solid #8E44AD;">
+    <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px;margin-bottom:12px;">
+      <h2 style="margin-bottom:0">🧠 AI-Proposed New Test Cases</h2>
+      <div style="font-size:0.8rem;color:#7F8C8D">
+        <span style="background:#C0392B;color:white;padding:2px 8px;border-radius:4px;font-weight:700;margin-right:4px">{proposals_by_priority['HIGH']} HIGH</span>
+        <span style="background:#E67E22;color:white;padding:2px 8px;border-radius:4px;font-weight:700;margin-right:4px">{proposals_by_priority['MEDIUM']} MEDIUM</span>
+        <span style="background:#2980B9;color:white;padding:2px 8px;border-radius:4px;font-weight:700;margin-right:8px">{proposals_by_priority['LOW']} LOW</span>
+        {len(proposals)} proposals &nbsp;|&nbsp;
+        <a href="{cfg['project']['repo_url']}/blob/main/dashboard/ai_test_proposals.json" target="_blank" style="color:#2980B9">View full JSON →</a>
+      </div>
+    </div>
+    <div style="font-size:0.82rem;color:#555;margin-bottom:10px;padding:8px;background:#F8F9FA;border-radius:6px">
+      Generated from: bug ticket analysis (SCRUM-91/92/93) · flaky scenario history · uncovered user stories (SCRUM-89/90) · gap analysis of existing 44 scenarios
+    </div>
+    <div class="table-wrap" style="max-height:420px;overflow-y:auto">
+      <table>
+        <thead>
+          <tr>
+            <th style="width:100px">ID</th>
+            <th style="width:75px">Priority</th>
+            <th style="width:140px">Feature</th>
+            <th style="width:200px">Category</th>
+            <th>Proposed Test Title</th>
+            <th>Source / Basis</th>
+          </tr>
+        </thead>
+        <tbody>
+          {proposal_rows}
         </tbody>
       </table>
     </div>

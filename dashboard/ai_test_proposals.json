@@ -1,0 +1,307 @@
+{
+  "metadata": {
+    "generated_by": "Claude Code (claude-sonnet-4-6)",
+    "generated_at": "2026-04-09",
+    "project": "ClaudeEvalAcademyProj",
+    "app_under_test": "https://www.saucedemo.com",
+    "basis": [
+      "Analysis of 3 Jira bug tickets: SCRUM-91, SCRUM-92, SCRUM-93",
+      "Analysis of 4 historically flaky scenarios from CI run history",
+      "Analysis of 2 uncovered Jira user stories: SCRUM-89, SCRUM-90",
+      "Gap analysis of existing 44 scenarios against known risk areas",
+      "Review of React/Selenium interaction failures observed in CI runs 1-8"
+    ],
+    "existing_scenario_count": 44,
+    "proposed_scenario_count": 22,
+    "total_after_addition": 66
+  },
+
+  "proposals": [
+
+    {
+      "id": "TC-NEW-001",
+      "source": "SCRUM-91 — Checkout form fields not submitted (React controlled inputs)",
+      "category": "Regression — Bug Reintroduction Guard",
+      "priority": "HIGH",
+      "feature": "Checkout",
+      "jira_bug": "SCRUM-91",
+      "title": "Checkout form accepts special characters in all fields",
+      "rationale": "SCRUM-91 was caused by React controlled input state not updating. Special characters stress-test the JS native setter fix — if the setter regresses, these inputs will fail silently rather than throwing an error.",
+      "scenario": "Scenario: Checkout accepts special characters in name and zip fields\n  When the user enters checkout info: first name \"O'Brien\", last name \"Smith-Jones\", zip \"SW1A 1AA\"\n  And the user clicks Continue\n  Then the order overview page is displayed"
+    },
+
+    {
+      "id": "TC-NEW-002",
+      "source": "SCRUM-91 — Checkout form fields not submitted",
+      "category": "Regression — Bug Reintroduction Guard",
+      "priority": "HIGH",
+      "feature": "Checkout",
+      "jira_bug": "SCRUM-91",
+      "title": "Checkout form accepts very long input values",
+      "rationale": "Long strings can overflow React state setters or truncate silently. Validates the JS fill approach handles max-length inputs correctly.",
+      "scenario": "Scenario: Checkout form handles long input values\n  When the user enters checkout info: first name \"Alexandros\", last name \"Papadopoulos-Konstantinidis\", zip \"123456789\"\n  And the user clicks Continue\n  Then the order overview page is displayed"
+    },
+
+    {
+      "id": "TC-NEW-003",
+      "source": "SCRUM-91 — Checkout form fields not submitted",
+      "category": "Regression — Bug Reintroduction Guard",
+      "priority": "MEDIUM",
+      "feature": "Checkout",
+      "jira_bug": "SCRUM-91",
+      "title": "Checkout form rejects whitespace-only inputs",
+      "rationale": "Whitespace-only fields pass HTML required checks but are semantically empty. The React state setter should trigger validation. Ensures validation is not bypassed by spaces.",
+      "scenario": "Scenario: Checkout fails when first name is whitespace only\n  When the user enters checkout info: first name \" \", last name \"Doe\", zip \"12345\"\n  And the user clicks Continue\n  Then a checkout error is displayed containing \"First Name is required\""
+    },
+
+    {
+      "id": "TC-NEW-004",
+      "source": "SCRUM-92 — Cart badge count incorrect after React DOM re-render",
+      "category": "Regression — Bug Reintroduction Guard",
+      "priority": "HIGH",
+      "feature": "Shopping Cart",
+      "jira_bug": "SCRUM-92",
+      "title": "Cart badge count is correct after adding 4 items sequentially",
+      "rationale": "SCRUM-92 showed the badge count failing at the 3rd item due to DOM stale references. This extends coverage to 4 items to validate the fix holds across more iterations.",
+      "scenario": "Scenario: Cart badge updates correctly when adding 4 items\n  When the user adds \"Sauce Labs Backpack\" to the cart\n  And the user adds \"Sauce Labs Bike Light\" to the cart\n  And the user adds \"Sauce Labs Bolt T-Shirt\" to the cart\n  And the user adds \"Sauce Labs Fleece Jacket\" to the cart\n  Then the cart badge shows \"4\""
+    },
+
+    {
+      "id": "TC-NEW-005",
+      "source": "SCRUM-92 — Cart badge count incorrect after React DOM re-render",
+      "category": "Regression — Bug Reintroduction Guard",
+      "priority": "MEDIUM",
+      "feature": "Shopping Cart",
+      "jira_bug": "SCRUM-92",
+      "title": "Cart badge count is correct after add then remove then add again",
+      "rationale": "The DOM re-render bug was triggered by rapid sequential adds. A remove-then-add sequence forces multiple React state transitions — the most likely pattern to reintroduce stale reference failures.",
+      "scenario": "Scenario: Cart badge is correct after removing and re-adding an item\n  When the user adds \"Sauce Labs Backpack\" to the cart\n  And the user adds \"Sauce Labs Bike Light\" to the cart\n  And the user removes \"Sauce Labs Backpack\" from the inventory page\n  And the user adds \"Sauce Labs Backpack\" to the cart\n  Then the cart badge shows \"2\""
+    },
+
+    {
+      "id": "TC-NEW-006",
+      "source": "SCRUM-93 — Re-login after logout fails due to React session state",
+      "category": "Regression — Bug Reintroduction Guard",
+      "priority": "HIGH",
+      "feature": "Logout",
+      "jira_bug": "SCRUM-93",
+      "title": "Cart state is cleared after logout and re-login",
+      "rationale": "SCRUM-93 involved React session state persisting across logout. This scenario validates that cart state — not just URL — is properly reset after a logout/re-login cycle.",
+      "scenario": "Scenario: Cart is empty after logout and re-login\n  Given the user is logged in as \"standard_user\"\n  And the user adds \"Sauce Labs Backpack\" to the cart\n  When the user opens the burger menu\n  And the user clicks Logout\n  And the user is logged in as \"standard_user\"\n  Then the cart badge is not visible"
+    },
+
+    {
+      "id": "TC-NEW-007",
+      "source": "SCRUM-93 — Re-login after logout",
+      "category": "Regression — Bug Reintroduction Guard",
+      "priority": "MEDIUM",
+      "feature": "Logout",
+      "jira_bug": "SCRUM-93",
+      "title": "Different user can log in after standard_user logs out",
+      "rationale": "Session isolation across user switches is a critical security boundary. If React session state persists across logout, a different user logging in could inherit the previous session.",
+      "scenario": "Scenario: A different user can log in after standard_user logs out\n  Given the user is logged in as \"standard_user\"\n  When the user opens the burger menu\n  And the user clicks Logout\n  And the user is logged in as \"performance_glitch_user\"\n  Then the user is on the inventory page"
+    },
+
+    {
+      "id": "TC-NEW-008",
+      "source": "Flaky scenario analysis — 'Complete purchase via Finish button'",
+      "category": "Flaky Scenario Hardening",
+      "priority": "HIGH",
+      "feature": "Checkout",
+      "flaky_scenario": "Complete purchase via Finish button",
+      "title": "Finish button completes purchase when multiple items are in cart",
+      "rationale": "The flaky Finish button scenario uses a single-item cart. Testing with multiple items forces more React state transitions before the Finish click, exposing timing issues that single-item tests mask.",
+      "scenario": "Scenario: Complete purchase with multiple items via Finish button\n  Given the user is logged in as \"standard_user\"\n  And the user has \"Sauce Labs Backpack\" in the cart\n  And the user has \"Sauce Labs Bike Light\" in the cart\n  And the user navigates to the cart\n  And the user clicks Checkout\n  When the user enters checkout info: first name \"John\", last name \"Doe\", zip \"12345\"\n  And the user clicks Continue\n  And the user clicks Finish\n  Then the order confirmation page is displayed\n  And the confirmation message contains \"Thank you for your order\""
+    },
+
+    {
+      "id": "TC-NEW-009",
+      "source": "Flaky scenario analysis — 'Cart is empty after successful purchase'",
+      "category": "Flaky Scenario Hardening",
+      "priority": "HIGH",
+      "feature": "Checkout",
+      "flaky_scenario": "Cart is empty after successful purchase",
+      "title": "Cart badge absent after purchasing all 6 items",
+      "rationale": "Cart-empty check after purchase is flaky with 1 item. Testing with all 6 items validates the React state flush is complete before the badge assertion — a more demanding test of timing.",
+      "scenario": "Scenario: Cart is empty after purchasing all 6 items\n  Given the user is logged in as \"standard_user\"\n  And the user adds all products to the cart\n  And the user navigates to the cart\n  And the user clicks Checkout\n  When the user enters checkout info: first name \"John\", last name \"Doe\", zip \"12345\"\n  And the user clicks Continue\n  And the user clicks Finish\n  And the user clicks Back Home\n  Then the cart badge is not visible"
+    },
+
+    {
+      "id": "TC-NEW-010",
+      "source": "Flaky scenario analysis — 'Cancel on order overview returns to inventory'",
+      "category": "Flaky Scenario Hardening",
+      "priority": "MEDIUM",
+      "feature": "Checkout",
+      "flaky_scenario": "Cancel on order overview returns to inventory page",
+      "title": "Cancel on overview preserves cart contents",
+      "rationale": "The existing cancel-overview scenario only checks navigation. This extends it to verify cart state is preserved after cancel — a common regression point when React re-renders the cart on navigation.",
+      "scenario": "Scenario: Cancelling on overview preserves cart contents\n  When the user enters checkout info: first name \"John\", last name \"Doe\", zip \"12345\"\n  And the user clicks Continue\n  And the user clicks Cancel on the overview page\n  And the user navigates to the cart\n  Then the cart contains \"1\" items"
+    },
+
+    {
+      "id": "TC-NEW-011",
+      "source": "Gap analysis — no price validation on product detail page",
+      "category": "Edge Case — Missing Coverage",
+      "priority": "MEDIUM",
+      "feature": "Inventory / Product Listings",
+      "title": "Product detail page price matches inventory page price",
+      "rationale": "The inventory page shows prices in product cards and on the detail page. A price mismatch between pages is a known e-commerce defect class. Not currently tested.",
+      "scenario": "Scenario: Product detail page shows the same price as the inventory listing\n  When the user clicks on the first product name\n  Then the product detail page price matches the inventory listing price"
+    },
+
+    {
+      "id": "TC-NEW-012",
+      "source": "Gap analysis — no back button test from detail page",
+      "category": "Edge Case — Missing Coverage",
+      "priority": "LOW",
+      "feature": "Inventory / Product Listings",
+      "title": "Back button from product detail returns to correct inventory state",
+      "rationale": "The existing sort-resets scenario uses the back button but the sort state test is the focus. A dedicated test confirms the inventory page is fully functional after returning from detail.",
+      "scenario": "Scenario: Back button from product detail returns to inventory with cart intact\n  When the user adds \"Sauce Labs Backpack\" to the cart\n  And the user clicks on the first product name\n  And the user clicks the back button\n  Then the cart badge shows \"1\""
+    },
+
+    {
+      "id": "TC-NEW-013",
+      "source": "Gap analysis — no XSS test in checkout fields",
+      "category": "Security Edge Case",
+      "priority": "MEDIUM",
+      "feature": "Checkout",
+      "title": "Checkout form is not vulnerable to XSS in name fields",
+      "rationale": "The login page has a SQL injection test (TC-010) but checkout fields have no security tests. React typically escapes output but this should be explicitly validated.",
+      "scenario": "Scenario: Checkout form does not execute script tags in name fields\n  When the user enters checkout info: first name \"<script>alert(1)</script>\", last name \"Doe\", zip \"12345\"\n  And the user clicks Continue\n  Then the order overview page is displayed\n  And the page does not display a JavaScript alert"
+    },
+
+    {
+      "id": "TC-NEW-014",
+      "source": "Gap analysis — no test for price_user persona",
+      "category": "Edge Case — User Persona Coverage",
+      "priority": "MEDIUM",
+      "feature": "Checkout",
+      "title": "error_user can complete checkout without errors",
+      "rationale": "The login scenarios cover error_user for authentication but never test whether that persona can complete a full purchase. The error_user persona is known to exhibit intermittent UI errors — checkout is the highest-risk flow.",
+      "scenario": "Scenario: error_user can complete a full purchase\n  Given the user is logged in as \"error_user\"\n  And the user has \"Sauce Labs Backpack\" in the cart\n  And the user navigates to the cart\n  And the user clicks Checkout\n  When the user enters checkout info: first name \"John\", last name \"Doe\", zip \"12345\"\n  And the user clicks Continue\n  And the user clicks Finish\n  Then the order confirmation page is displayed"
+    },
+
+    {
+      "id": "TC-NEW-015",
+      "source": "Gap analysis — performance_glitch_user not tested beyond login",
+      "category": "Edge Case — User Persona Coverage",
+      "priority": "LOW",
+      "feature": "Inventory / Product Listings",
+      "title": "performance_glitch_user sees inventory page within acceptable time",
+      "rationale": "performance_glitch_user introduces artificial delays. Inventory load is currently only tested for standard_user. This validates the page loads and is functional — not just that login succeeded.",
+      "scenario": "Scenario: performance_glitch_user can view and sort the inventory page\n  Given the user is logged in as \"performance_glitch_user\"\n  And the user is on the inventory page\n  When the user sorts products by \"Price (low to high)\"\n  Then the products are sorted by price ascending"
+    },
+
+    {
+      "id": "TC-NEW-016",
+      "source": "SCRUM-89 — Accessibility: Navigation Roll-over Text (uncovered user story)",
+      "category": "Uncovered User Story — SCRUM-89",
+      "priority": "MEDIUM",
+      "feature": "Inventory / Product Listings",
+      "jira_story": "SCRUM-89",
+      "title": "Navigation links have accessible title or aria attributes",
+      "rationale": "SCRUM-89 is a user story with zero test coverage. Navigation accessibility is a compliance requirement in many organisations. This adds basic coverage.",
+      "scenario": "Scenario: Shopping cart link has accessible label\n  Then the shopping cart link has an accessible label or title attribute"
+    },
+
+    {
+      "id": "TC-NEW-017",
+      "source": "SCRUM-90 — Social media navigation (uncovered user story)",
+      "category": "Uncovered User Story — SCRUM-90",
+      "priority": "LOW",
+      "feature": "Inventory / Product Listings",
+      "jira_story": "SCRUM-90",
+      "title": "Social media links are present and point to correct destinations",
+      "rationale": "SCRUM-90 has zero test coverage. Social links are frequently broken by CMS updates. Basic presence check adds traceability back to the user story.",
+      "scenario": "Scenario: Footer social media links are present on the inventory page\n  Then the page footer contains a Twitter social media link\n  And the page footer contains a Facebook social media link\n  And the page footer contains a LinkedIn social media link"
+    },
+
+    {
+      "id": "TC-NEW-018",
+      "source": "Gap analysis — checkout with zero-priced or discounted items not tested",
+      "category": "Edge Case — Boundary Condition",
+      "priority": "MEDIUM",
+      "feature": "Checkout",
+      "title": "Order total equals item price plus tax when only the lowest priced item is purchased",
+      "rationale": "Price calculation is only tested with the Sauce Labs Backpack ($29.99). The lowest priced item (Sauce Labs Bike Light, $9.99) exercises a different numeric boundary in the tax calculation.",
+      "scenario": "Scenario: Order total is correct for the lowest priced item\n  Given the user is logged in as \"standard_user\"\n  And the user has \"Sauce Labs Bike Light\" in the cart\n  And the user navigates to the cart\n  And the user clicks Checkout\n  When the user enters checkout info: first name \"John\", last name \"Doe\", zip \"12345\"\n  And the user clicks Continue\n  Then the subtotal matches the sum of item prices\n  And the order total equals subtotal plus tax"
+    },
+
+    {
+      "id": "TC-NEW-019",
+      "source": "Gap analysis — no test for direct URL access to checkout steps",
+      "category": "Security Edge Case",
+      "priority": "HIGH",
+      "feature": "Checkout",
+      "title": "Checkout step 2 is not accessible by direct URL without completing step 1",
+      "rationale": "A user bypassing checkout-step-one by navigating directly to checkout-step-two is a flow integrity issue. SauceDemo should redirect back to step 1 or the cart.",
+      "scenario": "Scenario: Checkout step 2 is not directly accessible without step 1\n  Given the user is logged in as \"standard_user\"\n  When the user navigates directly to the checkout step 2 page\n  Then the user is not on the order overview page"
+    },
+
+    {
+      "id": "TC-NEW-020",
+      "source": "Gap analysis — no test for cart item quantity display",
+      "category": "Edge Case — Missing Coverage",
+      "priority": "LOW",
+      "feature": "Shopping Cart",
+      "title": "Cart page shows quantity of 1 for each item added once",
+      "rationale": "SauceDemo does not support quantity > 1 per item (no quantity increment control). The cart page should always show quantity 1 per line item. Not explicitly validated.",
+      "scenario": "Scenario: Each item in the cart shows a quantity of 1\n  When the user adds \"Sauce Labs Backpack\" to the cart\n  And the user adds \"Sauce Labs Bike Light\" to the cart\n  And the user navigates to the cart\n  Then each cart item shows a quantity of \"1\""
+    },
+
+    {
+      "id": "TC-NEW-021",
+      "source": "Gap analysis — no test verifying logout clears session cookie",
+      "category": "Security Edge Case",
+      "priority": "HIGH",
+      "feature": "Logout",
+      "title": "Browser back button after logout does not restore authenticated session",
+      "rationale": "After logout, pressing the browser back button is a common session hijack vector. If the browser serves a cached authenticated page, the session is not truly terminated.",
+      "scenario": "Scenario: Browser back button after logout redirects to login page\n  When the user opens the burger menu\n  And the user clicks Logout\n  And the user clicks the browser back button\n  Then the user is redirected to the login page"
+    },
+
+    {
+      "id": "TC-NEW-022",
+      "source": "Gap analysis — no test for inventory page after completing purchase",
+      "category": "Edge Case — Post-Purchase State",
+      "priority": "MEDIUM",
+      "feature": "Checkout",
+      "title": "All product buttons show Add to Cart after completing a purchase",
+      "rationale": "After a successful purchase, the cart is cleared. The inventory page should show all Add to Cart buttons (not Remove). If React state is not reset, Remove buttons may persist incorrectly.",
+      "scenario": "Scenario: Inventory buttons reset to Add to Cart after purchase completion\n  When the user enters checkout info: first name \"John\", last name \"Doe\", zip \"12345\"\n  And the user clicks Continue\n  And the user clicks Finish\n  And the user clicks Back Home\n  Then the button for \"Sauce Labs Backpack\" shows \"Add to cart\""
+    }
+
+  ],
+
+  "summary": {
+    "total_proposed": 22,
+    "by_category": {
+      "Regression — Bug Reintroduction Guard": 7,
+      "Flaky Scenario Hardening": 3,
+      "Edge Case — Missing Coverage": 4,
+      "Security Edge Case": 3,
+      "Edge Case — User Persona Coverage": 2,
+      "Uncovered User Story": 2,
+      "Edge Case — Post-Purchase State": 1
+    },
+    "by_priority": {
+      "HIGH": 9,
+      "MEDIUM": 10,
+      "LOW": 3
+    },
+    "by_feature": {
+      "Checkout": 10,
+      "Shopping Cart": 4,
+      "Logout": 3,
+      "Inventory / Product Listings": 4,
+      "Login": 0
+    },
+    "implementation_order": [
+      "TC-NEW-001 through TC-NEW-007 — implement first (regression guards for known bugs)",
+      "TC-NEW-008 through TC-NEW-010 — implement second (flaky scenario hardening)",
+      "TC-NEW-019, TC-NEW-021 — implement third (security edge cases)",
+      "TC-NEW-011 through TC-NEW-018, TC-NEW-020, TC-NEW-022 — implement last (coverage gaps)"
+    ]
+  }
+}
