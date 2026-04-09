@@ -62,6 +62,34 @@ ai_suggestions:
     - "All scenarios stable — no immediate action required"
     - "Add visual regression tests for product images when tooling is available"
 
+# Bug tickets — shown on dashboard in the Defects panel
+# Update status here when bugs are resolved in Jira
+bugs:
+  - key: "SCRUM-91"
+    summary: "Checkout form fields not submitted — automation stuck on step-one after fillForm"
+    feature: "Checkout"
+    priority: "High"
+    status: "To Do"
+    root_cause: "React controlled inputs — standard Selenium sendKeys does not update React state"
+    fix_applied: "JS native React setter with dispatchEvent — replaces sendKeys across all checkout fields"
+    url: "https://testingclaude.atlassian.net/browse/SCRUM-91"
+  - key: "SCRUM-92"
+    summary: "Cart badge count incorrect when adding multiple items — shows 2 instead of 3"
+    feature: "Shopping Cart"
+    priority: "Medium"
+    status: "To Do"
+    root_cause: "Stale DOM reference after React re-render — button reference invalidated after first two clicks"
+    fix_applied: "Switched to data-test attribute selector to re-locate button after each DOM update"
+    url: "https://testingclaude.atlassian.net/browse/SCRUM-92"
+  - key: "SCRUM-93"
+    summary: "Re-login after logout fails — URL stays at root instead of navigating to inventory"
+    feature: "Logout"
+    priority: "Medium"
+    status: "To Do"
+    root_cause: "React session state from previous session interferes with re-login form field registration"
+    fix_applied: "JS fill + click for post-logout login, with explicit wait for inventory.html URL"
+    url: "https://testingclaude.atlassian.net/browse/SCRUM-93"
+
 # Metrics to display on dashboard
 metrics:
   - total_scenarios

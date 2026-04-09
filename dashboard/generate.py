@@ -146,6 +146,34 @@ history_labels   = json.dumps([h["run_num"] for h in history])
 history_pass_rate= json.dumps([h["pass_rate"] for h in history])
 history_stability= json.dumps([h["stability"] for h in history])
 
+# ─── Build bug rows ───────────────────────────────────────────────────────────
+bugs = cfg.get("bugs", [])
+
+def bug_priority_colour(priority):
+    return {"High": "#C0392B", "Medium": "#E67E22", "Low": "#2980B9"}.get(priority, "#7F8C8D")
+
+def bug_status_colour(status):
+    return {"To Do": "#7F8C8D", "In Progress": "#2980B9",
+            "Done": "#27AE60", "Closed": "#27AE60"}.get(status, "#7F8C8D")
+
+bug_rows = ""
+for b in bugs:
+    pc  = bug_priority_colour(b["priority"])
+    sc  = bug_status_colour(b["status"])
+    bug_rows += f"""
+    <tr>
+      <td><a href="{b['url']}" target="_blank" style="color:#2980B9;font-weight:700">{b['key']}</a></td>
+      <td>{b['summary']}</td>
+      <td><span class='badge' style='background:{badge_colour(cfg["feature_risk"].get(b["feature"],"UNKNOWN"))}'>{b['feature']}</span></td>
+      <td><span class='badge' style='background:{pc}'>{b['priority']}</span></td>
+      <td><span class='badge' style='background:{sc}'>{b['status']}</span></td>
+      <td style='font-size:0.78rem;color:#555'>{b['root_cause']}</td>
+      <td style='font-size:0.78rem;color:#27AE60'>{b['fix_applied']}</td>
+    </tr>"""
+
+open_bugs   = sum(1 for b in bugs if b["status"] not in ("Done", "Closed"))
+closed_bugs = sum(1 for b in bugs if b["status"] in ("Done", "Closed"))
+
 # ─── Build scenario rows ──────────────────────────────────────────────────────
 scenario_rows = ""
 for feat in features:
@@ -239,11 +267,12 @@ html = f"""<!DOCTYPE html>
 
   /* ── Layout ── */
   .container {{ max-width: 1400px; margin: 0 auto; padding: 24px; }}
+  .grid-5 {{ display:grid; grid-template-columns: repeat(5,1fr); gap:16px; margin-bottom:24px; }}
   .grid-4 {{ display:grid; grid-template-columns: repeat(4,1fr); gap:16px; margin-bottom:24px; }}
   .grid-2 {{ display:grid; grid-template-columns: 1fr 1fr; gap:16px; margin-bottom:24px; }}
   .grid-1 {{ margin-bottom:24px; }}
-  @media(max-width:900px) {{ .grid-4,.grid-2 {{ grid-template-columns:1fr 1fr; }} }}
-  @media(max-width:500px) {{ .grid-4,.grid-2 {{ grid-template-columns:1fr; }} }}
+  @media(max-width:900px) {{ .grid-5,.grid-4,.grid-2 {{ grid-template-columns:1fr 1fr; }} }}
+  @media(max-width:500px) {{ .grid-5,.grid-4,.grid-2 {{ grid-template-columns:1fr; }} }}
 
   /* ── Cards ── */
   .card {{ background:white; border-radius:10px; padding:20px; box-shadow:0 2px 6px rgba(0,0,0,0.07); }}
@@ -339,7 +368,7 @@ html = f"""<!DOCTYPE html>
   </div>
 
   <!-- ── KPI Row ── -->
-  <div class="grid-4">
+  <div class="grid-5">
     <div class="card">
       <h2>Total Scenarios</h2>
       <div class="kpi-value" style="color:var(--blue)">{total_scenarios}</div>
@@ -365,6 +394,11 @@ html = f"""<!DOCTYPE html>
       <h2>Execution Time</h2>
       <div class="kpi-value" style="color:var(--text)">{round(total_duration)}s</div>
       <div class="kpi-label">{round(total_duration/60,1)} minutes total</div>
+    </div>
+    <div class="card">
+      <h2>🐛 Open Bugs</h2>
+      <div class="kpi-value" style="color:{'#C0392B' if open_bugs > 0 else '#27AE60'}">{open_bugs}</div>
+      <div class="kpi-label">{closed_bugs} resolved &nbsp;|&nbsp; {len(bugs)} total</div>
     </div>
   </div>
 
@@ -421,6 +455,36 @@ html = f"""<!DOCTYPE html>
 
   <!-- ── Failed Scenarios (only shown if there are failures) ── -->
   {'<div class="card grid-1" style="border-left:4px solid #C0392B;"><h2 style="color:#C0392B;">❌ Failed Scenarios — This Run</h2><div class="table-wrap" style="margin-top:12px"><table><thead><tr><th>Feature</th><th>Scenario</th><th>Duration</th><th>Failure Detail</th></tr></thead><tbody>' + failed_rows + '</tbody></table></div></div>' if total_fail > 0 else '<div class="card grid-1" style="border-left:4px solid #27AE60;"><h2 style="color:#27AE60;">✅ No Failures — All Scenarios Passed This Run</h2></div>'}
+
+  <!-- ── Bug Tracker Panel ── -->
+  <div class="card grid-1" style="border-left:4px solid #C0392B;">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;">
+      <h2 style="margin-bottom:0">🐛 Defect Tracker — Jira Bugs</h2>
+      <div style="font-size:0.8rem;color:#7F8C8D;">
+        <span style="background:#C0392B;color:white;padding:2px 8px;border-radius:4px;font-weight:700;margin-right:6px">{open_bugs} OPEN</span>
+        <span style="background:#27AE60;color:white;padding:2px 8px;border-radius:4px;font-weight:700">{closed_bugs} RESOLVED</span>
+        &nbsp;&nbsp;<a href="https://testingclaude.atlassian.net/issues?jql=project%3DSCRUM%20AND%20issuetype%3DBug" target="_blank" style="color:#2980B9;font-size:0.8rem">View all in Jira →</a>
+      </div>
+    </div>
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th style="width:90px">Ticket</th>
+            <th>Summary</th>
+            <th style="width:130px">Feature</th>
+            <th style="width:80px">Priority</th>
+            <th style="width:90px">Status</th>
+            <th>Root Cause</th>
+            <th>Fix Applied</th>
+          </tr>
+        </thead>
+        <tbody>
+          {bug_rows}
+        </tbody>
+      </table>
+    </div>
+  </div>
 
   <!-- ── Run History Table ── -->
   <div class="card grid-1">
