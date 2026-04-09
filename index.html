@@ -23,11 +23,12 @@
 
   /* ── Layout ── */
   .container { max-width: 1400px; margin: 0 auto; padding: 24px; }
+  .grid-5 { display:grid; grid-template-columns: repeat(5,1fr); gap:16px; margin-bottom:24px; }
   .grid-4 { display:grid; grid-template-columns: repeat(4,1fr); gap:16px; margin-bottom:24px; }
   .grid-2 { display:grid; grid-template-columns: 1fr 1fr; gap:16px; margin-bottom:24px; }
   .grid-1 { margin-bottom:24px; }
-  @media(max-width:900px) { .grid-4,.grid-2 { grid-template-columns:1fr 1fr; } }
-  @media(max-width:500px) { .grid-4,.grid-2 { grid-template-columns:1fr; } }
+  @media(max-width:900px) { .grid-5,.grid-4,.grid-2 { grid-template-columns:1fr 1fr; } }
+  @media(max-width:500px) { .grid-5,.grid-4,.grid-2 { grid-template-columns:1fr; } }
 
   /* ── Cards ── */
   .card { background:white; border-radius:10px; padding:20px; box-shadow:0 2px 6px rgba(0,0,0,0.07); }
@@ -91,8 +92,8 @@
     </div>
   </div>
   <div class="meta">
-    Run #10 &nbsp;|&nbsp; ae4ce7a<br>
-    2026-04-09 12:21 UTC<br>
+    Run #11 &nbsp;|&nbsp; 31413dd<br>
+    2026-04-09 13:38 UTC<br>
     <span style="opacity:0.5">Auto-refreshes every 15 min</span>
   </div>
 </div>
@@ -109,7 +110,7 @@
       <div>
         <div style="font-size:1.6rem;font-weight:800;">✅ ALL TESTS PASSED</div>
         <div style="font-size:0.85rem;opacity:0.85;margin-top:4px;">
-          Run #10 &nbsp;·&nbsp; Commit ae4ce7a &nbsp;·&nbsp; 2026-04-09 12:21 UTC
+          Run #11 &nbsp;·&nbsp; Commit 31413dd &nbsp;·&nbsp; 2026-04-09 13:38 UTC
         </div>
       </div>
       <div style="display:flex;gap:24px;text-align:center;">
@@ -123,7 +124,7 @@
   </div>
 
   <!-- ── KPI Row ── -->
-  <div class="grid-4">
+  <div class="grid-5">
     <div class="card">
       <h2>Total Scenarios</h2>
       <div class="kpi-value" style="color:var(--blue)">88</div>
@@ -149,6 +150,11 @@
       <h2>Execution Time</h2>
       <div class="kpi-value" style="color:var(--text)">103s</div>
       <div class="kpi-label">1.7 minutes total</div>
+    </div>
+    <div class="card">
+      <h2>🐛 Open Bugs</h2>
+      <div class="kpi-value" style="color:#C0392B">3</div>
+      <div class="kpi-label">0 resolved &nbsp;|&nbsp; 3 total</div>
     </div>
   </div>
 
@@ -257,19 +263,19 @@
         <tr class='row-passed'>
           <td>Shopping Cart</td>
           <td>✅ </td>
-          <td class='center'>0.71s</td>
+          <td class='center'>0.69s</td>
           <td>—</td>
         </tr>
         <tr class='row-passed'>
           <td>Shopping Cart</td>
           <td>✅ Add a single item to the cart from the inventory page</td>
-          <td class='center'>0.36s</td>
+          <td class='center'>0.34s</td>
           <td>—</td>
         </tr>
         <tr class='row-passed'>
           <td>Shopping Cart</td>
           <td>✅ </td>
-          <td class='center'>0.65s</td>
+          <td class='center'>0.6s</td>
           <td>—</td>
         </tr>
         <tr class='row-passed'>
@@ -281,43 +287,43 @@
         <tr class='row-passed'>
           <td>Shopping Cart</td>
           <td>✅ </td>
-          <td class='center'>0.6s</td>
+          <td class='center'>0.58s</td>
           <td>—</td>
         </tr>
         <tr class='row-passed'>
           <td>Shopping Cart</td>
           <td>✅ Add item to cart from the product detail page</td>
-          <td class='center'>0.29s</td>
+          <td class='center'>0.31s</td>
           <td>—</td>
         </tr>
         <tr class='row-passed'>
           <td>Shopping Cart</td>
           <td>✅ </td>
-          <td class='center'>0.62s</td>
+          <td class='center'>0.58s</td>
           <td>—</td>
         </tr>
         <tr class='row-passed'>
           <td>Shopping Cart</td>
           <td>✅ Add all available items to the cart</td>
-          <td class='center'>0.48s</td>
+          <td class='center'>0.49s</td>
           <td>—</td>
         </tr>
         <tr class='row-passed'>
           <td>Shopping Cart</td>
           <td>✅ </td>
-          <td class='center'>0.63s</td>
+          <td class='center'>0.59s</td>
           <td>—</td>
         </tr>
         <tr class='row-passed'>
           <td>Shopping Cart</td>
           <td>✅ Cart contents persist after page refresh</td>
-          <td class='center'>0.38s</td>
+          <td class='center'>0.41s</td>
           <td>—</td>
         </tr>
         <tr class='row-passed'>
           <td>Shopping Cart</td>
           <td>✅ </td>
-          <td class='center'>0.61s</td>
+          <td class='center'>0.59s</td>
           <td>—</td>
         </tr>
         <tr class='row-passed'>
@@ -335,7 +341,19 @@
         <tr class='row-passed'>
           <td>Shopping Cart</td>
           <td>✅ Cart page shows empty state when no items added</td>
-          <td class='center'>10.18s</td>
+          <td class='center'>10.22s</td>
+          <td>—</td>
+        </tr>
+        <tr class='row-passed'>
+          <td>Shopping Cart</td>
+          <td>✅ </td>
+          <td class='center'>0.57s</td>
+          <td>—</td>
+        </tr>
+        <tr class='row-passed'>
+          <td>Shopping Cart</td>
+          <td>✅ Continue Shopping button returns to inventory</td>
+          <td class='center'>0.28s</td>
           <td>—</td>
         </tr>
         <tr class='row-passed'>
@@ -346,20 +364,20 @@
         </tr>
         <tr class='row-passed'>
           <td>Shopping Cart</td>
-          <td>✅ Continue Shopping button returns to inventory</td>
-          <td class='center'>0.3s</td>
+          <td>✅ Remove item via Remove button on the inventory page</td>
+          <td class='center'>10.3s</td>
           <td>—</td>
         </tr>
         <tr class='row-passed'>
           <td>Shopping Cart</td>
           <td>✅ </td>
-          <td class='center'>0.59s</td>
+          <td class='center'>0.58s</td>
           <td>—</td>
         </tr>
         <tr class='row-passed'>
           <td>Shopping Cart</td>
-          <td>✅ Remove item via Remove button on the inventory page</td>
-          <td class='center'>10.34s</td>
+          <td>✅ Remove item from the cart page</td>
+          <td class='center'>0.3s</td>
           <td>—</td>
         </tr>
         <tr class='row-passed'>
@@ -370,26 +388,14 @@
         </tr>
         <tr class='row-passed'>
           <td>Shopping Cart</td>
-          <td>✅ Remove item from the cart page</td>
-          <td class='center'>0.32s</td>
-          <td>—</td>
-        </tr>
-        <tr class='row-passed'>
-          <td>Shopping Cart</td>
-          <td>✅ </td>
-          <td class='center'>0.62s</td>
-          <td>—</td>
-        </tr>
-        <tr class='row-passed'>
-          <td>Shopping Cart</td>
           <td>✅ Removing the last item leaves the cart empty</td>
-          <td class='center'>10.27s</td>
+          <td class='center'>10.28s</td>
           <td>—</td>
         </tr>
         <tr class='row-passed'>
           <td>Checkout</td>
           <td>✅ </td>
-          <td class='center'>0.7s</td>
+          <td class='center'>0.69s</td>
           <td>—</td>
         </tr>
         <tr class='row-passed'>
@@ -407,7 +413,7 @@
         <tr class='row-passed'>
           <td>Checkout</td>
           <td>✅ Complete purchase via Finish button <span class='badge badge-flaky'>FLAKY</span></td>
-          <td class='center'>0.26s</td>
+          <td class='center'>0.25s</td>
           <td>—</td>
         </tr>
         <tr class='row-passed'>
@@ -419,49 +425,49 @@
         <tr class='row-passed'>
           <td>Checkout</td>
           <td>✅ Cart is empty after successful purchase <span class='badge badge-flaky'>FLAKY</span></td>
-          <td class='center'>10.37s</td>
+          <td class='center'>10.34s</td>
           <td>—</td>
         </tr>
         <tr class='row-passed'>
           <td>Checkout</td>
           <td>✅ </td>
-          <td class='center'>0.68s</td>
+          <td class='center'>0.69s</td>
           <td>—</td>
         </tr>
         <tr class='row-passed'>
           <td>Checkout</td>
           <td>✅ Checkout fails when first name is missing</td>
+          <td class='center'>3.25s</td>
+          <td>—</td>
+        </tr>
+        <tr class='row-passed'>
+          <td>Checkout</td>
+          <td>✅ </td>
+          <td class='center'>0.67s</td>
+          <td>—</td>
+        </tr>
+        <tr class='row-passed'>
+          <td>Checkout</td>
+          <td>✅ Checkout fails when last name is missing</td>
           <td class='center'>3.26s</td>
           <td>—</td>
         </tr>
         <tr class='row-passed'>
           <td>Checkout</td>
           <td>✅ </td>
-          <td class='center'>0.7s</td>
-          <td>—</td>
-        </tr>
-        <tr class='row-passed'>
-          <td>Checkout</td>
-          <td>✅ Checkout fails when last name is missing</td>
-          <td class='center'>3.25s</td>
-          <td>—</td>
-        </tr>
-        <tr class='row-passed'>
-          <td>Checkout</td>
-          <td>✅ </td>
-          <td class='center'>0.66s</td>
+          <td class='center'>0.67s</td>
           <td>—</td>
         </tr>
         <tr class='row-passed'>
           <td>Checkout</td>
           <td>✅ Checkout fails when postal code is missing</td>
-          <td class='center'>3.25s</td>
+          <td class='center'>3.26s</td>
           <td>—</td>
         </tr>
         <tr class='row-passed'>
           <td>Checkout</td>
           <td>✅ </td>
-          <td class='center'>0.74s</td>
+          <td class='center'>0.69s</td>
           <td>—</td>
         </tr>
         <tr class='row-passed'>
@@ -473,73 +479,73 @@
         <tr class='row-passed'>
           <td>Checkout</td>
           <td>✅ </td>
-          <td class='center'>0.69s</td>
+          <td class='center'>0.67s</td>
           <td>—</td>
         </tr>
         <tr class='row-passed'>
           <td>Checkout</td>
           <td>✅ Cancel on order overview returns to inventory page <span class='badge badge-flaky'>FLAKY</span></td>
-          <td class='center'>0.27s</td>
+          <td class='center'>0.29s</td>
           <td>—</td>
         </tr>
         <tr class='row-passed'>
           <td>Checkout</td>
           <td>✅ </td>
-          <td class='center'>0.71s</td>
+          <td class='center'>0.7s</td>
           <td>—</td>
         </tr>
         <tr class='row-passed'>
           <td>Checkout</td>
           <td>✅ Order overview shows correct subtotal and tax</td>
-          <td class='center'>0.25s</td>
+          <td class='center'>0.26s</td>
           <td>—</td>
         </tr>
         <tr class='row-passed'>
           <td>Inventory / Product Listings</td>
           <td>✅ </td>
-          <td class='center'>0.62s</td>
+          <td class='center'>0.57s</td>
           <td>—</td>
         </tr>
         <tr class='row-passed'>
           <td>Inventory / Product Listings</td>
           <td>✅ Inventory page displays product cards with all required fields</td>
-          <td class='center'>0.35s</td>
+          <td class='center'>0.33s</td>
           <td>—</td>
         </tr>
         <tr class='row-passed'>
           <td>Inventory / Product Listings</td>
           <td>✅ </td>
-          <td class='center'>0.59s</td>
+          <td class='center'>0.6s</td>
           <td>—</td>
         </tr>
         <tr class='row-passed'>
           <td>Inventory / Product Listings</td>
           <td>✅ Product images load without broken links</td>
-          <td class='center'>0.21s</td>
+          <td class='center'>0.22s</td>
           <td>—</td>
         </tr>
         <tr class='row-passed'>
           <td>Inventory / Product Listings</td>
           <td>✅ </td>
-          <td class='center'>0.62s</td>
+          <td class='center'>0.56s</td>
           <td>—</td>
         </tr>
         <tr class='row-passed'>
           <td>Inventory / Product Listings</td>
           <td>✅ Clicking a product name navigates to the product detail page</td>
-          <td class='center'>0.24s</td>
+          <td class='center'>0.27s</td>
           <td>—</td>
         </tr>
         <tr class='row-passed'>
           <td>Inventory / Product Listings</td>
           <td>✅ </td>
-          <td class='center'>0.61s</td>
+          <td class='center'>0.57s</td>
           <td>—</td>
         </tr>
         <tr class='row-passed'>
           <td>Inventory / Product Listings</td>
           <td>✅ Sort products alphabetically A to Z</td>
-          <td class='center'>0.29s</td>
+          <td class='center'>0.3s</td>
           <td>—</td>
         </tr>
         <tr class='row-passed'>
@@ -551,19 +557,19 @@
         <tr class='row-passed'>
           <td>Inventory / Product Listings</td>
           <td>✅ Sort products alphabetically Z to A</td>
-          <td class='center'>0.3s</td>
+          <td class='center'>0.31s</td>
           <td>—</td>
         </tr>
         <tr class='row-passed'>
           <td>Inventory / Product Listings</td>
           <td>✅ </td>
-          <td class='center'>0.64s</td>
+          <td class='center'>0.58s</td>
           <td>—</td>
         </tr>
         <tr class='row-passed'>
           <td>Inventory / Product Listings</td>
           <td>✅ Sort products by price low to high</td>
-          <td class='center'>0.3s</td>
+          <td class='center'>0.31s</td>
           <td>—</td>
         </tr>
         <tr class='row-passed'>
@@ -575,67 +581,67 @@
         <tr class='row-passed'>
           <td>Inventory / Product Listings</td>
           <td>✅ Sort products by price high to low</td>
-          <td class='center'>0.33s</td>
+          <td class='center'>0.32s</td>
           <td>—</td>
         </tr>
         <tr class='row-passed'>
           <td>Inventory / Product Listings</td>
           <td>✅ </td>
-          <td class='center'>0.58s</td>
+          <td class='center'>0.57s</td>
           <td>—</td>
         </tr>
         <tr class='row-passed'>
           <td>Inventory / Product Listings</td>
           <td>✅ Sort order resets to default after returning from product detail</td>
-          <td class='center'>10.31s</td>
+          <td class='center'>10.29s</td>
           <td>—</td>
         </tr>
         <tr class='row-passed'>
           <td>Login</td>
           <td>✅ </td>
-          <td class='center'>0.25s</td>
+          <td class='center'>0.23s</td>
           <td>—</td>
         </tr>
         <tr class='row-passed'>
           <td>Login</td>
           <td>✅ Successful login with valid credentials</td>
-          <td class='center'>0.5s</td>
-          <td>—</td>
-        </tr>
-        <tr class='row-passed'>
-          <td>Login</td>
-          <td>✅ </td>
-          <td class='center'>0.25s</td>
-          <td>—</td>
-        </tr>
-        <tr class='row-passed'>
-          <td>Login</td>
-          <td>✅ Login with different valid user accounts</td>
-          <td class='center'>5.53s</td>
-          <td>—</td>
-        </tr>
-        <tr class='row-passed'>
-          <td>Login</td>
-          <td>✅ </td>
-          <td class='center'>0.27s</td>
-          <td>—</td>
-        </tr>
-        <tr class='row-passed'>
-          <td>Login</td>
-          <td>✅ Login with different valid user accounts</td>
           <td class='center'>0.52s</td>
           <td>—</td>
         </tr>
         <tr class='row-passed'>
           <td>Login</td>
           <td>✅ </td>
-          <td class='center'>0.25s</td>
+          <td class='center'>0.24s</td>
           <td>—</td>
         </tr>
         <tr class='row-passed'>
           <td>Login</td>
           <td>✅ Login with different valid user accounts</td>
-          <td class='center'>0.52s</td>
+          <td class='center'>5.55s</td>
+          <td>—</td>
+        </tr>
+        <tr class='row-passed'>
+          <td>Login</td>
+          <td>✅ </td>
+          <td class='center'>0.26s</td>
+          <td>—</td>
+        </tr>
+        <tr class='row-passed'>
+          <td>Login</td>
+          <td>✅ Login with different valid user accounts</td>
+          <td class='center'>0.53s</td>
+          <td>—</td>
+        </tr>
+        <tr class='row-passed'>
+          <td>Login</td>
+          <td>✅ </td>
+          <td class='center'>0.24s</td>
+          <td>—</td>
+        </tr>
+        <tr class='row-passed'>
+          <td>Login</td>
+          <td>✅ Login with different valid user accounts</td>
+          <td class='center'>0.54s</td>
           <td>—</td>
         </tr>
         <tr class='row-passed'>
@@ -647,7 +653,7 @@
         <tr class='row-passed'>
           <td>Login</td>
           <td>✅ Login with different valid user accounts</td>
-          <td class='center'>0.55s</td>
+          <td class='center'>0.54s</td>
           <td>—</td>
         </tr>
         <tr class='row-passed'>
@@ -665,7 +671,7 @@
         <tr class='row-passed'>
           <td>Login</td>
           <td>✅ </td>
-          <td class='center'>0.25s</td>
+          <td class='center'>0.23s</td>
           <td>—</td>
         </tr>
         <tr class='row-passed'>
@@ -677,60 +683,48 @@
         <tr class='row-passed'>
           <td>Login</td>
           <td>✅ </td>
-          <td class='center'>0.25s</td>
+          <td class='center'>0.24s</td>
           <td>—</td>
         </tr>
         <tr class='row-passed'>
           <td>Login</td>
           <td>✅ Login fails when username is empty</td>
-          <td class='center'>0.37s</td>
-          <td>—</td>
-        </tr>
-        <tr class='row-passed'>
-          <td>Login</td>
-          <td>✅ </td>
-          <td class='center'>0.25s</td>
-          <td>—</td>
-        </tr>
-        <tr class='row-passed'>
-          <td>Login</td>
-          <td>✅ Login fails when password is empty</td>
           <td class='center'>0.36s</td>
           <td>—</td>
         </tr>
         <tr class='row-passed'>
           <td>Login</td>
           <td>✅ </td>
-          <td class='center'>0.26s</td>
+          <td class='center'>0.23s</td>
+          <td>—</td>
+        </tr>
+        <tr class='row-passed'>
+          <td>Login</td>
+          <td>✅ Login fails when password is empty</td>
+          <td class='center'>0.37s</td>
+          <td>—</td>
+        </tr>
+        <tr class='row-passed'>
+          <td>Login</td>
+          <td>✅ </td>
+          <td class='center'>0.24s</td>
           <td>—</td>
         </tr>
         <tr class='row-passed'>
           <td>Login</td>
           <td>✅ Login fails when both fields are empty</td>
-          <td class='center'>0.29s</td>
+          <td class='center'>0.28s</td>
           <td>—</td>
         </tr>
         <tr class='row-passed'>
           <td>Login</td>
           <td>✅ </td>
-          <td class='center'>0.25s</td>
+          <td class='center'>0.24s</td>
           <td>—</td>
         </tr>
         <tr class='row-passed'>
           <td>Login</td>
           <td>✅ Login is not vulnerable to SQL injection</td>
-          <td class='center'>0.45s</td>
-          <td>—</td>
-        </tr>
-        <tr class='row-passed'>
-          <td>Login</td>
-          <td>✅ </td>
-          <td class='center'>0.25s</td>
-          <td>—</td>
-        </tr>
-        <tr class='row-passed'>
-          <td>Login</td>
-          <td>✅ Locked out user cannot login</td>
           <td class='center'>0.44s</td>
           <td>—</td>
         </tr>
@@ -742,44 +736,56 @@
         </tr>
         <tr class='row-passed'>
           <td>Login</td>
+          <td>✅ Locked out user cannot login</td>
+          <td class='center'>0.47s</td>
+          <td>—</td>
+        </tr>
+        <tr class='row-passed'>
+          <td>Login</td>
+          <td>✅ </td>
+          <td class='center'>0.24s</td>
+          <td>—</td>
+        </tr>
+        <tr class='row-passed'>
+          <td>Login</td>
           <td>✅ Inventory is not accessible without login</td>
-          <td class='center'>0.27s</td>
+          <td class='center'>0.29s</td>
           <td>—</td>
         </tr>
         <tr class='row-passed'>
           <td>Logout</td>
           <td>✅ </td>
-          <td class='center'>0.57s</td>
+          <td class='center'>0.56s</td>
           <td>—</td>
         </tr>
         <tr class='row-passed'>
           <td>Logout</td>
           <td>✅ User can log out via the burger menu</td>
-          <td class='center'>0.73s</td>
+          <td class='center'>0.77s</td>
           <td>—</td>
         </tr>
         <tr class='row-passed'>
           <td>Logout</td>
           <td>✅ </td>
-          <td class='center'>0.59s</td>
+          <td class='center'>0.65s</td>
           <td>—</td>
         </tr>
         <tr class='row-passed'>
           <td>Logout</td>
           <td>✅ Inventory page is not accessible after logout</td>
-          <td class='center'>0.84s</td>
+          <td class='center'>0.87s</td>
           <td>—</td>
         </tr>
         <tr class='row-passed'>
           <td>Logout</td>
           <td>✅ </td>
-          <td class='center'>0.57s</td>
+          <td class='center'>0.62s</td>
           <td>—</td>
         </tr>
         <tr class='row-passed'>
           <td>Logout</td>
           <td>✅ User can log back in after logging out <span class='badge badge-flaky'>FLAKY</span></td>
-          <td class='center'>0.88s</td>
+          <td class='center'>0.9s</td>
           <td>—</td>
         </tr>
         </tbody>
@@ -789,6 +795,63 @@
 
   <!-- ── Failed Scenarios (only shown if there are failures) ── -->
   <div class="card grid-1" style="border-left:4px solid #27AE60;"><h2 style="color:#27AE60;">✅ No Failures — All Scenarios Passed This Run</h2></div>
+
+  <!-- ── Bug Tracker Panel ── -->
+  <div class="card grid-1" style="border-left:4px solid #C0392B;">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;">
+      <h2 style="margin-bottom:0">🐛 Defect Tracker — Jira Bugs</h2>
+      <div style="font-size:0.8rem;color:#7F8C8D;">
+        <span style="background:#C0392B;color:white;padding:2px 8px;border-radius:4px;font-weight:700;margin-right:6px">3 OPEN</span>
+        <span style="background:#27AE60;color:white;padding:2px 8px;border-radius:4px;font-weight:700">0 RESOLVED</span>
+        &nbsp;&nbsp;<a href="https://testingclaude.atlassian.net/issues?jql=project%3DSCRUM%20AND%20issuetype%3DBug" target="_blank" style="color:#2980B9;font-size:0.8rem">View all in Jira →</a>
+      </div>
+    </div>
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th style="width:90px">Ticket</th>
+            <th>Summary</th>
+            <th style="width:130px">Feature</th>
+            <th style="width:80px">Priority</th>
+            <th style="width:90px">Status</th>
+            <th>Root Cause</th>
+            <th>Fix Applied</th>
+          </tr>
+        </thead>
+        <tbody>
+          
+    <tr>
+      <td><a href="https://testingclaude.atlassian.net/browse/SCRUM-91" target="_blank" style="color:#2980B9;font-weight:700">SCRUM-91</a></td>
+      <td>Checkout form fields not submitted — automation stuck on step-one after fillForm</td>
+      <td><span class='badge' style='background:#C0392B'>Checkout</span></td>
+      <td><span class='badge' style='background:#C0392B'>High</span></td>
+      <td><span class='badge' style='background:#7F8C8D'>To Do</span></td>
+      <td style='font-size:0.78rem;color:#555'>React controlled inputs — standard Selenium sendKeys does not update React state</td>
+      <td style='font-size:0.78rem;color:#27AE60'>JS native React setter with dispatchEvent — replaces sendKeys across all checkout fields</td>
+    </tr>
+    <tr>
+      <td><a href="https://testingclaude.atlassian.net/browse/SCRUM-92" target="_blank" style="color:#2980B9;font-weight:700">SCRUM-92</a></td>
+      <td>Cart badge count incorrect when adding multiple items — shows 2 instead of 3</td>
+      <td><span class='badge' style='background:#E67E22'>Shopping Cart</span></td>
+      <td><span class='badge' style='background:#E67E22'>Medium</span></td>
+      <td><span class='badge' style='background:#7F8C8D'>To Do</span></td>
+      <td style='font-size:0.78rem;color:#555'>Stale DOM reference after React re-render — button reference invalidated after first two clicks</td>
+      <td style='font-size:0.78rem;color:#27AE60'>Switched to data-test attribute selector to re-locate button after each DOM update</td>
+    </tr>
+    <tr>
+      <td><a href="https://testingclaude.atlassian.net/browse/SCRUM-93" target="_blank" style="color:#2980B9;font-weight:700">SCRUM-93</a></td>
+      <td>Re-login after logout fails — URL stays at root instead of navigating to inventory</td>
+      <td><span class='badge' style='background:#E67E22'>Logout</span></td>
+      <td><span class='badge' style='background:#E67E22'>Medium</span></td>
+      <td><span class='badge' style='background:#7F8C8D'>To Do</span></td>
+      <td style='font-size:0.78rem;color:#555'>React session state from previous session interferes with re-login form field registration</td>
+      <td style='font-size:0.78rem;color:#27AE60'>JS fill + click for post-logout login, with explicit wait for inventory.html URL</td>
+    </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
 
   <!-- ── Run History Table ── -->
   <div class="card grid-1">
@@ -804,14 +867,14 @@
         <tbody>
           
     <tr>
-      <td class='center'>#10</td>
-      <td class='center'>ae4ce7a</td>
-      <td>2026-04-09 12:21 UTC</td>
+      <td class='center'>#11</td>
+      <td class='center'>31413dd</td>
+      <td>2026-04-09 13:38 UTC</td>
       <td class='center'><b style='color:#27AE60'>✅ PASS</b></td>
       <td class='center'>88 / 88</td>
       <td class='center' style='color:#27AE60'><b>100.0%</b></td>
       <td class='center' style='color:#27AE60'>100.0</td>
-      <td class='center'>103.4s</td>
+      <td class='center'>103.0s</td>
     </tr>
         </tbody>
       </table>
@@ -865,7 +928,7 @@
 
 <div class="footer">
   Generated by Claude Code (claude-sonnet-4-6) &nbsp;|&nbsp;
-  ClaudeEvalAcademyProj &nbsp;|&nbsp; 2026-04-09 12:21 UTC
+  ClaudeEvalAcademyProj &nbsp;|&nbsp; 2026-04-09 13:38 UTC
 </div>
 
 <script>
@@ -889,7 +952,7 @@ new Chart(document.getElementById('barChart'), {
 new Chart(document.getElementById('trendChart'), {
   type: 'line',
   data: {
-    labels: ["10"],
+    labels: ["11"],
     datasets: [
       {
         label: 'Pass Rate %', data: [100.0],
